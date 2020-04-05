@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.vehicle.dao.vehicle.VehicleDao">
+    
+	<sql id="vehicleColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.telephone AS "telephone",
+		a.info_call AS "call",
+		a.vehicle_type AS "vehicleType",
+		a.vehicle_color AS "vehicleColor",
+		a.vehicle_code AS "vehicleCode",
+		a.is_limit_line AS "isLimitLine",
+		a.remark AS "remark",
+		a.nh_001 AS "nh001",
+		a.nh_002 AS "nh002",
+		a.create_time AS "createTime",
+		a.price AS "price"
+	</sql>
+	
+	<sql id="vehicleJoins">
+	</sql>
+    
+	<select id="get" resultType="Vehicle">
+		SELECT 
+			<include refid="vehicleColumns"/>
+		FROM vehicle a
+		<include refid="vehicleJoins"/>
+		WHERE a.id = #{id} and a.is_valid = 1
+	</select>
+	
+	<select id="findList" resultType="Vehicle">
+		SELECT 
+			<include refid="vehicleColumns"/>
+		FROM vehicle a
+		<include refid="vehicleJoins"/>
+		<where>
+			a.is_valid = 1
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="vehicleType != null and vehicleType != ''">
+				AND a.vehicle_Type LIKE
+				<if test="dbName == 'oracle'">'%'||#{vehicleType}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{vehicleType}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{vehicleType},'%')</if>
+			</if>
+			<if test="vehicleColor != null and vehicleColor != ''">
+				AND a.vehicle_Color LIKE
+				<if test="dbName == 'oracle'">'%'||#{vehicleColor}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{vehicleColor}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{vehicleColor},'%')</if>
+			</if>
+			<if test="vehicleCode != null and vehicleCode != ''">
+				AND a.vehicle_Code LIKE
+				<if test="dbName == 'oracle'">'%'||#{vehicleCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{vehicleCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{vehicleCode},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Vehicle">
+		SELECT 
+			<include refid="vehicleColumns"/>
+		FROM vehicle a
+		<include refid="vehicleJoins"/>
+		<where>
+			a.is_valid = 1
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO vehicle(
+			name,
+			telephone,
+			info_call,
+			vehicle_type,
+			vehicle_color,
+			vehicle_code,
+			is_limit_line,
+			remark,
+			nh_001,
+			nh_002,
+			create_time,
+			price
+		) VALUES (
+			#{name},
+			#{telephone},
+			#{call},
+			#{vehicleType},
+			#{vehicleColor},
+			#{vehicleCode},
+			#{isLimitLine},
+			#{remark},
+			#{nh001},
+			#{nh002},
+			#{createTime},
+			#{price}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE vehicle SET 	
+			name = #{name},
+			telephone = #{telephone},
+			info_call = #{call},
+			vehicle_type = #{vehicleType},
+			vehicle_color = #{vehicleColor},
+			vehicle_code = #{vehicleCode},
+			is_limit_line = #{isLimitLine},
+			remark = #{remark},
+			nh_001 = #{nh001},
+			nh_002 = #{nh002},
+			create_time = #{createTime},
+			price = #{price}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE vehicle SET
+			is_valid = 0
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

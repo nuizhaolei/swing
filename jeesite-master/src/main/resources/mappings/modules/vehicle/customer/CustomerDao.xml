@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.vehicle.dao.customer.CustomerDao">
+    
+	<sql id="customerColumns">
+		a.id AS "id",
+		a.telephone AS "telephone",
+		a.name AS "name",
+		a.marriage_date AS "marriageDate",
+		a.count AS "count",
+		a.total_price AS "totalPrice",
+		a.distance AS "distance",
+		a.car_list AS "carList",
+		a.line AS "line",
+		a.remark AS "remark",
+		a.create_time AS "createTime"
+	</sql>
+	
+	<sql id="customerJoins">
+	</sql>
+    
+	<select id="get" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM customer a
+		<include refid="customerJoins"/>
+		WHERE a.id = #{id} and a.is_valid = 1
+	</select>
+	
+	<select id="findList" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM customer a
+		<include refid="customerJoins"/>
+		<where>
+			a.is_valid = 1
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM customer a
+		<include refid="customerJoins"/>
+		<where>
+			a.is_valid = 1
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO customer(
+			name,
+			marriage_date,
+			count,
+			telephone,
+			total_price,
+			distance,
+			car_list,
+			remark,
+			create_time,
+			line
+		) VALUES (
+			#{name},
+			#{marriageDate},
+			#{count},
+			#{telephone},
+			#{totalPrice},
+			#{distance},
+			#{carList},
+			#{remark},
+			#{createTime},
+			#{line}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE customer SET 	
+			name = #{name},
+			marriage_date = #{marriageDate},
+			count = #{count},
+			total_price = #{totalPrice},
+			distance = #{distance},
+			car_list = #{carList},
+			remark = #{remark},
+			create_time = #{createTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE customer SET
+			is_valid = 0
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
