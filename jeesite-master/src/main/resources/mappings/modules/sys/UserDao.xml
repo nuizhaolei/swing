@@ -262,7 +262,7 @@
 			update_date = #{updateDate}, 
 			remarks = #{remarks},
 			login_flag = #{loginFlag},
-			photo = #{photo}
+			photo = #{photo},
 			sex=#{sex},
 		    natives=#{natives},
 			education=#{education},
