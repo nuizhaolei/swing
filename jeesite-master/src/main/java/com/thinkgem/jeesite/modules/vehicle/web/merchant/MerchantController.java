@@ -121,8 +121,10 @@ public class MerchantController extends BaseController {
 					if (merchant.getName() != null && merchant.getName().trim().length() > 0
 							&& merchant.getTelephone() != null && merchant.getTelephone().trim().length() > 0) {
 
-						bigDecimal = new BigDecimal(merchant.getTelephone());
-						merchant.setTelephone(bigDecimal.toPlainString());
+					    if(!merchant.getTelephone().contains("（") && !merchant.getTelephone().contains("-")) {
+                            bigDecimal = new BigDecimal(merchant.getTelephone());
+                            merchant.setTelephone(bigDecimal.toPlainString());
+                        }
 						merchantService.save(merchant);
 						successNum++;
 					} else {
