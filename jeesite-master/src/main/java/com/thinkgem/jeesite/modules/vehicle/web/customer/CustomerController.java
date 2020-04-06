@@ -3,27 +3,31 @@
  */
 package com.thinkgem.jeesite.modules.vehicle.web.customer;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
+import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.vehicle.entity.customer.Customer;
+import com.thinkgem.jeesite.modules.vehicle.service.customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.vehicle.entity.customer.Customer;
-import com.thinkgem.jeesite.modules.vehicle.service.customer.CustomerService;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * customerController
@@ -83,6 +87,66 @@ public class CustomerController extends BaseController {
 		customerService.delete(customer);
 		addMessage(redirectAttributes, "删除customer成功");
 		return "redirect:"+Global.getAdminPath()+"/vehicle/customer/customer/?repage";
+	}
+
+	@RequestMapping(value = "export", method = RequestMethod.POST)
+	public String export(Customer customer, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		try {
+			String fileName = "客户列表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+			Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
+			new ExportExcel("客户列表", Customer.class).setDataList(page.getList()).write(response, fileName).dispose();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			addMessage(redirectAttributes, "导出数据！失败信息：" + e.getMessage());
+		}
+		return "redirect:" + adminPath + "/vehicle/customer/customer?repage";
+	}
+
+	@RequestMapping(value = "import", method = RequestMethod.POST)
+	public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
+		try {
+			int successNum = 0;
+			int failureNum = 0;
+			StringBuilder failureMsg = new StringBuilder();
+			ImportExcel ei = new ImportExcel(file, 1, 0);
+			List<Customer> list = ei.getDataList(Customer.class);
+			BigDecimal bigDecimal = null;
+			for (Customer customer : list) {
+				try {
+					if (customer.getName() != null && customer.getName().trim().length() > 0) {
+
+						if(!customer.getTelephone().contains("（") && !customer.getTelephone().contains("-")) {
+							bigDecimal = new BigDecimal(customer.getTelephone());
+							customer.setTelephone(bigDecimal.toPlainString());
+						}
+						customerService.save(customer);
+						successNum++;
+					} else {
+						failureMsg.append("<br/>姓名" + customer.getName() + " 导入失败; ");
+						failureNum++;
+					}
+				} catch (ConstraintViolationException ex) {
+					ex.printStackTrace();
+					failureMsg.append("<br/>姓名 " + customer.getName() + " 导入失败：");
+					List<String> messageList = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
+					for (String message : messageList) {
+						failureMsg.append(message + "; ");
+						failureNum++;
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					failureMsg.append("<br/>姓名 " + customer.getName() + " 导入失败：" + ex.getMessage());
+				}
+			}
+			if (failureNum > 0) {
+				failureMsg.insert(0, "，失败 " + failureNum + " 条，导入信息如下：");
+			}
+			addMessage(redirectAttributes, "已成功导入 " + successNum + " 条用户" + failureMsg);
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导入失败！失败信息：" + e.getMessage());
+		}
+		return "modules/vehicle/customer/customerList";
 	}
 
 }

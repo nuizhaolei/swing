@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.vehicle.entity.customer;
 
+import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
@@ -42,6 +43,7 @@ public class Customer extends DataEntity<Customer> {
     }
 
     @Length(min = 1, max = 64, message = "姓名长度必须介于 1 和 64 之间")
+    @ExcelField(title="姓名", align=2, sort=20)
     public String getName() {
         return name;
     }
@@ -49,7 +51,7 @@ public class Customer extends DataEntity<Customer> {
     public void setName(String name) {
         this.name = name;
     }
-
+    @ExcelField(title="数量", align=2, sort=40)
     public Long getCount() {
         return count;
     }
@@ -57,7 +59,7 @@ public class Customer extends DataEntity<Customer> {
     public void setCount(Long count) {
         this.count = count;
     }
-
+    @ExcelField(title="总价", align=2, sort=55)
     public String getTotalPrice() {
         return totalPrice;
     }
@@ -65,7 +67,7 @@ public class Customer extends DataEntity<Customer> {
     public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
     }
-
+    @ExcelField(title="公里计算", align=2, sort=50)
     public String getDistance() {
         return distance;
     }
@@ -75,6 +77,7 @@ public class Customer extends DataEntity<Customer> {
     }
 
     @Length(min = 0, max = 256, message = "车队组合长度必须介于 0 和 256 之间")
+    @ExcelField(title="车队组合", align=2, sort=35)
     public String getCarList() {
         return carList;
     }
@@ -84,6 +87,7 @@ public class Customer extends DataEntity<Customer> {
     }
 
     @Length(min = 0, max = 256, message = "备注长度必须介于 0 和 256 之间")
+    @ExcelField(title="备注", align=2, sort=60)
     public String getRemark() {
         return remark;
     }
@@ -105,6 +109,7 @@ public class Customer extends DataEntity<Customer> {
         this.marriageDate = marriageDate;
     }
 
+    @ExcelField(title="路线", align=2, sort=45)
     public String getLine() {
         return line;
     }
@@ -112,7 +117,7 @@ public class Customer extends DataEntity<Customer> {
     public void setLine(String line) {
         this.line = line;
     }
-
+    @ExcelField(title="电话", align=2, sort=30)
     public String getTelephone() {
         return telephone;
     }
@@ -122,6 +127,7 @@ public class Customer extends DataEntity<Customer> {
     }
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "创建时间不能为空")
+    @ExcelField(title="婚期", align=2, sort=25)
     public Date getMarriageDate() {
         return marriageDate;
     }
