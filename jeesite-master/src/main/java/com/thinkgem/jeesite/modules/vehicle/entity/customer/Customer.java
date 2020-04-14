@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.vehicle.entity.customer;
 
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
+import com.thinkgem.jeesite.modules.vehicle.entity.common.Gbt22602007;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
@@ -33,6 +34,8 @@ public class Customer extends DataEntity<Customer> {
     private Date createTime;        // 创建时间
     private String line;    //路线
     private String telephone;   //电话
+    private String userNo;
+    private Gbt22602007 gbt22602007;
 
     public Customer() {
         super();
@@ -130,5 +133,21 @@ public class Customer extends DataEntity<Customer> {
     @ExcelField(title="婚期", align=2, sort=25)
     public Date getMarriageDate() {
         return marriageDate;
+    }
+
+    public String getUserNo() {
+        return userNo;
+    }
+
+    public void setUserNo(String userNo) {
+        this.userNo = userNo;
+    }
+
+    public Gbt22602007 getGbt22602007() {
+        return gbt22602007;
+    }
+
+    public void setGbt22602007(Gbt22602007 gbt22602007) {
+        this.gbt22602007 = gbt22602007;
     }
 }

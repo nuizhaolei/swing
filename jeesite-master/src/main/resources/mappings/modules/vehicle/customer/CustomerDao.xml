@@ -13,7 +13,8 @@
 		a.car_list AS "carList",
 		a.line AS "line",
 		a.remark AS "remark",
-		a.create_time AS "createTime"
+		a.create_time AS "createTime",
+		a.user_no as "userNo"
 	</sql>
 	
 	<sql id="customerJoins">
@@ -34,6 +35,12 @@
 		<include refid="customerJoins"/>
 		<where>
 			a.is_valid = 1
+			<if test="userNo != null and userNo != ''">
+				and a.user_no = #{userNo}
+			</if>
+			<!--<if test="userNo != null and userNo != ''">
+				and a.user_no = #{userNo}
+			</if>-->
 			<if test="name != null and name != ''">
 				AND a.name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
@@ -57,6 +64,9 @@
 		<include refid="customerJoins"/>
 		<where>
 			a.is_valid = 1
+			<if test="userNo != null and userNo != ''">
+				and a.user_no = #{userNo}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -78,7 +88,8 @@
 			car_list,
 			remark,
 			create_time,
-			line
+			line,
+			user_no
 		) VALUES (
 			#{name},
 			#{marriageDate},
@@ -89,7 +100,8 @@
 			#{carList},
 			#{remark},
 			#{createTime},
-			#{line}
+			#{line},
+			#{userNo}
 		)
 	</insert>
 	
@@ -102,7 +114,8 @@
 			distance = #{distance},
 			car_list = #{carList},
 			remark = #{remark},
-			create_time = #{createTime}
+			create_time = #{createTime},
+			line = #{line}
 		WHERE id = #{id}
 	</update>
 	

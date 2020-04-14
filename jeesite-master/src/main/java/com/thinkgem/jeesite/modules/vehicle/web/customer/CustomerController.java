@@ -11,6 +11,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.vehicle.entity.customer.Customer;
 import com.thinkgem.jeesite.modules.vehicle.service.customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import java.util.List;
 
 /**
  * customerController
+ *
  * @author customer
  * @version 2020-04-04
  */
@@ -38,115 +41,132 @@ import java.util.List;
 @RequestMapping(value = "${adminPath}/vehicle/customer/customer")
 public class CustomerController extends BaseController {
 
-	@Autowired
-	private CustomerService customerService;
-	
-	@ModelAttribute
-	public Customer get(@RequestParam(required=false) String id) {
-		Customer entity = null;
-		if (StringUtils.isNotBlank(id)){
-			entity = customerService.get(id);
-		}
-		if (entity == null){
-			entity = new Customer();
-		}
-		return entity;
-	}
-	
-	@RequestMapping(value = {"list", ""})
-	public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer); 
-		model.addAttribute("page", page);
-		return "modules/vehicle/customer/customerList";
-	}
+    @Autowired
+    private CustomerService customerService;
 
-	@RequestMapping(value = "form")
-	public String form(Customer customer, Model model) {
-		model.addAttribute("customer", customer);
-		return "modules/vehicle/customer/customerForm";
-	}
+    @ModelAttribute
+    public Customer get(@RequestParam(required = false) String id) {
+        Customer entity = null;
+        if (StringUtils.isNotBlank(id)) {
+            entity = customerService.get(id);
+        }
+        if (entity == null) {
+            entity = new Customer();
+        }
+        return entity;
+    }
 
-	@RequestMapping(value = "save")
-	public String save(Customer customer, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, customer)){
-			return form(customer, model);
-		}
-		String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-		if(customer.getTelephone() == null || !customer.getTelephone().matches(regex)) {
+    @RequestMapping(value = {"list", ""})
+    public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
+        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
+        if (!UserUtils.isAuthority(principal)) {
+            customer.setUserNo(principal.getNo());
+        }
+        Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
+        model.addAttribute("page", page);
+        return "modules/vehicle/customer/customerList";
+    }
+
+    @RequestMapping(value = "form")
+    public String form(Customer customer, Model model) {
+        model.addAttribute("customer", customer);
+        return "modules/vehicle/customer/customerForm";
+    }
+
+    @RequestMapping(value = "save")
+    public String save(Customer customer, Model model, RedirectAttributes redirectAttributes) {
+        if (!beanValidator(model, customer)) {
+            return form(customer, model);
+        }
+        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
+        if (principal == null || principal.getNo() == null) {
             model.addAttribute("customer", customer);
-			addMessage(redirectAttributes, "保存客户信息失败，电话号不符合要求，请检查！");
-			return "redirect:" +Global.getAdminPath()+ "/vehicle/customer/customer/form?repage";
-		}
-		customerService.save(customer);
-		addMessage(redirectAttributes, "保存客户成功");
-		return "redirect:"+Global.getAdminPath()+"/vehicle/customer/customer/?repage";
-	}
-	
-	@RequestMapping(value = "delete")
-	public String delete(Customer customer, RedirectAttributes redirectAttributes) {
-		customerService.delete(customer);
-		addMessage(redirectAttributes, "删除customer成功");
-		return "redirect:"+Global.getAdminPath()+"/vehicle/customer/customer/?repage";
-	}
+            addMessage(redirectAttributes, "保存客户信息失败，你的登陆信息已失效，请重新登陆！");
+            return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";
+        }
+        String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+        if (customer.getTelephone() == null || !customer.getTelephone().matches(regex)) {
+            model.addAttribute("customer", customer);
+            addMessage(redirectAttributes, "保存客户信息失败，电话号不符合要求，请检查！");
+            return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";
+        }
+        customer.setUserNo(principal.getNo());
+        customerService.save(customer);
+        addMessage(redirectAttributes, "保存客户成功");
+        return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/?repage";
+    }
 
-	@RequestMapping(value = "export", method = RequestMethod.POST)
-	public String export(Customer customer, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
-		try {
-			String fileName = "客户列表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
-			Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
-			new ExportExcel("客户列表", Customer.class).setDataList(page.getList()).write(response, fileName).dispose();
-			return null;
-		} catch (Exception e) {
-			e.printStackTrace();
-			addMessage(redirectAttributes, "导出数据！失败信息：" + e.getMessage());
-		}
-		return "redirect:" + adminPath + "/vehicle/customer/customer?repage";
-	}
+    @RequestMapping(value = "delete")
+    public String delete(Customer customer, RedirectAttributes redirectAttributes) {
+        customerService.delete(customer);
+        addMessage(redirectAttributes, "删除客户成功");
+        return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/?repage";
+    }
 
-	@RequestMapping(value = "import", method = RequestMethod.POST)
-	public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
-		try {
-			int successNum = 0;
-			int failureNum = 0;
-			StringBuilder failureMsg = new StringBuilder();
-			ImportExcel ei = new ImportExcel(file, 1, 0);
-			List<Customer> list = ei.getDataList(Customer.class);
-			BigDecimal bigDecimal = null;
-			for (Customer customer : list) {
-				try {
-					if (customer.getName() != null && customer.getName().trim().length() > 0) {
+    @RequestMapping(value = "export", method = RequestMethod.POST)
+    public String export(Customer customer, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+        try {
+            String fileName = "客户列表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+            Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
+            new ExportExcel("客户列表", Customer.class).setDataList(page.getList()).write(response, fileName).dispose();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            addMessage(redirectAttributes, "导出数据！失败信息：" + e.getMessage());
+        }
+        return "redirect:" + adminPath + "/vehicle/customer/customer?repage";
+    }
 
-						if(!customer.getTelephone().contains("（") && !customer.getTelephone().contains("-")) {
-							bigDecimal = new BigDecimal(customer.getTelephone());
-							customer.setTelephone(bigDecimal.toPlainString());
-						}
-						customerService.save(customer);
-						successNum++;
-					} else {
-						failureMsg.append("<br/>姓名" + customer.getName() + " 导入失败; ");
-						failureNum++;
-					}
-				} catch (ConstraintViolationException ex) {
-					ex.printStackTrace();
-					failureMsg.append("<br/>姓名 " + customer.getName() + " 导入失败：");
-					List<String> messageList = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
-					for (String message : messageList) {
-						failureMsg.append(message + "; ");
-						failureNum++;
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					failureMsg.append("<br/>姓名 " + customer.getName() + " 导入失败：" + ex.getMessage());
-				}
-			}
-			if (failureNum > 0) {
-				failureMsg.insert(0, "，失败 " + failureNum + " 条，导入信息如下：");
-			}
-			addMessage(redirectAttributes, "已成功导入 " + successNum + " 条用户" + failureMsg);
-		} catch (Exception e) {
-			addMessage(redirectAttributes, "导入失败！失败信息：" + e.getMessage());
-		}
-		return "modules/vehicle/customer/customerList";
-	}
+    @RequestMapping(value = "import", method = RequestMethod.POST)
+    public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
+        try {
+            int successNum = 0;
+            int failureNum = 0;
+            StringBuilder failureMsg = new StringBuilder();
+            ImportExcel ei = new ImportExcel(file, 1, 0);
+            List<Customer> list = ei.getDataList(Customer.class);
+            BigDecimal bigDecimal = null;
+            SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
+            String userNo = null;
+            if (null != principal) {
+                userNo = principal.getNo() == null ? "0001" : principal.getNo();
+            }
+            for (Customer customer : list) {
+                try {
+                    if (customer.getName() != null && customer.getName().trim().length() > 0) {
+
+                        if (!customer.getTelephone().contains("（") && !customer.getTelephone().contains("-")) {
+                            bigDecimal = new BigDecimal(customer.getTelephone());
+                            customer.setTelephone(bigDecimal.toPlainString());
+                        }
+                        customer.setUserNo(userNo);
+                        customerService.save(customer);
+                        successNum++;
+                    } else {
+                        failureMsg.append("<br/>姓名" + customer.getName() + " 导入失败; ");
+                        failureNum++;
+                    }
+                } catch (ConstraintViolationException ex) {
+                    ex.printStackTrace();
+                    failureMsg.append("<br/>姓名 " + customer.getName() + " 导入失败：");
+                    List<String> messageList = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
+                    for (String message : messageList) {
+                        failureMsg.append(message + "; ");
+                        failureNum++;
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    failureMsg.append("<br/>姓名 " + customer.getName() + " 导入失败：" + ex.getMessage());
+                }
+            }
+            if (failureNum > 0) {
+                failureMsg.insert(0, "，失败 " + failureNum + " 条，导入信息如下：");
+            }
+            addMessage(redirectAttributes, "已成功导入 " + successNum + " 条用户" + failureMsg);
+        } catch (Exception e) {
+            addMessage(redirectAttributes, "导入失败！失败信息：" + e.getMessage());
+        }
+        return "modules/vehicle/customer/customerList";
+    }
 
 }

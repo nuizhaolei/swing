@@ -257,6 +257,8 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 		private String loginName; // 登录名
 		private String name; // 姓名
 		private boolean mobileLogin; // 是否手机登录
+		private String no;
+        private List<Role> roleList;
 		
 //		private Map<String, Object> cacheMap;
 
@@ -264,6 +266,8 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 			this.id = user.getId();
 			this.loginName = user.getLoginName();
 			this.name = user.getName();
+			this.no = user.getNo();
+			this.roleList = user.getRoleList();
 			this.mobileLogin = mobileLogin;
 		}
 
@@ -283,15 +287,23 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 			return mobileLogin;
 		}
 
-//		@JsonIgnore
-//		public Map<String, Object> getCacheMap() {
-//			if (cacheMap==null){
-//				cacheMap = new HashMap<String, Object>();
-//			}
-//			return cacheMap;
-//		}
+		public String getNo() {
+			return no;
+		}
 
-		/**
+		public void setNo(String no) {
+			this.no = no;
+		}
+
+        public List<Role> getRoleList() {
+            return roleList;
+        }
+
+        public void setRoleList(List<Role> roleList) {
+            this.roleList = roleList;
+        }
+
+        /**
 		 * 获取SESSIONID
 		 */
 		public String getSessionid() {
