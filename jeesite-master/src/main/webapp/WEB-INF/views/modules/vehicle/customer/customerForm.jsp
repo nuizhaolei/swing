@@ -23,6 +23,78 @@
                 }
             });
         });
+
+        function viewLogistics(event, logisticNO) {
+            var os = getOs();
+            var y = getY(event);
+            if (os == 'MSIE') {
+                y = window.event.y + 405;
+            }
+            $(".logisticscenter_xq").hide();
+            $("#" + logisticNO).show();
+            $("#" + logisticNO).css("top", y + 15);
+        }
+
+        // 计算对象居中需要设置的left和top值
+        // 参数：
+        // _w - 对象的宽度
+        // _h - 对象的高度
+        function getLT(_w, _h) {
+            var de = document.documentElement;
+            // 获取当前浏览器窗口的宽度和高度
+            // 兼容写法，可兼容ie,ff
+            var w = self.innerWidth || (de && de.clientWidth) || document.body.clientWidth;
+            var h = (de && de.clientHeight) || document.body.clientHeight;
+            // 获取当前滚动条的位置
+            // 兼容写法，可兼容ie,ff
+            var st = (de && de.scrollTop) || document.body.scrollTop;
+            var topp = 0;
+            if (h > _h)
+                topp = (st + (h - _h) / 2);
+            else
+                topp = st;
+            var leftp = 0;
+            if (w > _w)
+                leftp = ((w - _w) / 2);
+            // 左侧距，顶部距
+            return [leftp, topp];
+        }
+
+        //获取鼠标位置GetPostion
+        function GetPostion(e) {
+            var x = getX(e);
+            var y = getY(e);
+        }
+
+        function getX(e) {
+            e = e || window.event;
+            return e.pageX || e.clientX + document.body.scrollLeft - document.body.clientLeft
+        }
+
+        function getY(e) {
+            e = e || window.event;
+            return e.pageY || e.clientY + document.body.scrollTop - document.body.clientTop
+        }
+
+        //判断浏览器类型
+        function getOs() {
+            var OsObject = "";
+            if (navigator.userAgent.indexOf("MSIE") > 0) {
+                return "MSIE";
+            }
+            if (isFirefox = navigator.userAgent.indexOf("Firefox") > 0) {
+                return "Firefox";
+            }
+            if (isSafari = navigator.userAgent.indexOf("Safari") > 0) {
+                return "Safari";
+            }
+            if (isCamino = navigator.userAgent.indexOf("Camino") > 0) {
+                return "Camino";
+            }
+            if (isMozilla = navigator.userAgent.indexOf("Gecko/") > 0) {
+                return "Gecko";
+            }
+        }
     </script>
 </head>
 <body>
@@ -70,6 +142,13 @@
         <label class="control-label">车队组合：</label>
         <div class="controls">
             <form:textarea path="carList" htmlEscape="false" rows="4" maxlength="256" class="input-xxlarge "/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">选择车辆：</label>
+        <div class="controls">
+            <a class="view_button" onclick="viewLogistics(event,'page.html')"
+               href="####">选择</a>
         </div>
     </div>
     <div class="control-group">

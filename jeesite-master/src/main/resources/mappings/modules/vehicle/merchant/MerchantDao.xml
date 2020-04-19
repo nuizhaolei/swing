@@ -7,7 +7,8 @@
 		a.name AS "name",
 		a.address AS "address",
 		a.telephone AS "telephone",
-		a.remark AS "remark"
+		a.remark AS "remark",
+		a.link_name as "linkName"
 	</sql>
 	
 	<sql id="merchantJoins">
@@ -35,9 +36,10 @@
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
 		</where>
+		ORDER BY a.creatime desc
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
+				,${page.orderBy}
 			</when>
 			<otherwise>
 			</otherwise>
@@ -51,10 +53,11 @@
 		<include refid="merchantJoins"/>
 		<where>
 			
-		</where>		
+		</where>
+		ORDER BY a.creatime desc
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
+				,${page.orderBy}
 			</when>
 			<otherwise>
 			</otherwise>
@@ -66,11 +69,13 @@
 			name,
 			address,
 			telephone,
+			link_name,
 			remark
 		) VALUES (
 			#{name},
 			#{address},
 			#{telephone},
+			#{linkName},
 			#{remark}
 		)
 	</insert>
@@ -80,7 +85,8 @@
 			name = #{name},
 			address = #{address},
 			telephone = #{telephone},
-			remark = #{remark}
+			remark = #{remark},
+			link_name = #{linkName}
 		WHERE id = #{id}
 	</update>
 	

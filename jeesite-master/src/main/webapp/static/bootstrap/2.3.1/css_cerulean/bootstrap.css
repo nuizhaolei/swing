@@ -1295,6 +1295,10 @@ textarea::-webkit-input-placeholder {
   width: 150px;
 }
 
+.input-color {
+  width: 75px;
+}
+
 .input-large {
   width: 210px;
 }

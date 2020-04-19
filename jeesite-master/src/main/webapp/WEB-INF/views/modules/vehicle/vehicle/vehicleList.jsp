@@ -5,19 +5,21 @@
     <title>车辆管理</title>
     <meta name="decorator" content="default"/>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#btnExport").click(function(){
-                top.$.jBox.confirm("确认要导出数据吗？","系统提示",function(v,h,f){
-                    if(v=="ok"){
-                        $("#searchForm").attr("action","${ctx}/vehicle/vehicle/vehicle/export");
+        $(document).ready(function () {
+            $("#btnExport").click(function () {
+                top.$.jBox.confirm("确认要导出数据吗？", "系统提示", function (v, h, f) {
+                    if (v == "ok") {
+                        $("#searchForm").attr("action", "${ctx}/vehicle/vehicle/vehicle/export");
                         $("#searchForm").submit();
                     }
-                },{buttonsFocus:1});
-                top.$('.jbox-body .jbox-icon').css('top','55px');
+                }, {buttonsFocus: 1});
+                top.$('.jbox-body .jbox-icon').css('top', '55px');
             });
-            $("#btnImport").click(function(){
-                $.jBox($("#importBox").html(), {title:"导入数据", buttons:{"关闭":true},
-                    bottomText:"导入文件不能超过5M，仅允许导入“xls”或“xlsx”格式文件！"});
+            $("#btnImport").click(function () {
+                $.jBox($("#importBox").html(), {
+                    title: "导入数据", buttons: {"关闭": true},
+                    bottomText: "导入文件不能超过5M，仅允许导入“xls”或“xlsx”格式文件！"
+                });
             });
         });
 
@@ -27,6 +29,36 @@
             $("#searchForm").submit();
             return false;
         }
+        function static_num() {
+            document.getElementById("deleteSubmit").onclick = function () {
+                var arr = new Array();
+                var items = document.getElementsByName("category");
+                for (i = 0; i < items.length; i++) {
+                    if (items[i].checked) {
+                        arr.push(items[i].value);
+                    }
+                }
+                var url = encodeURIComponent("${ctx}/vehicle/vehicle/vehicle/delete?id=" + arr[0]);
+                console.log(decodeURIComponent(url));
+                $.get({
+                    //请求的媒体类型
+                    contentType: "application/json;charset=UTF-8",
+                    //请求地址
+                    url : url,
+                    //数据，json字符串
+                    // data : JSON.stringify(arr),
+                    //请求成功
+                    success : function(result) {
+                        console.log(result);
+                    },
+                    //请求失败，包含具体的错误信息
+                    error : function(e){
+                        console.log(e.status);
+                        console.log(e.responseText);
+                    }
+                });
+            };
+        };
     </script>
 </head>
 <body>
@@ -51,16 +83,17 @@
             <form:input path="name" htmlEscape="false" maxlength="128" class="input-medium"/>
         </li>
         <li><label>车型：</label>
-            <form:input path="vehicleType" htmlEscape="false" maxlength="128" class="input-medium"/>
+            <form:input path="vehicleType" htmlEscape="false" maxlength="128" cssStyle="width: 90px"/>
         </li>
         <li><label>颜色：</label>
-            <form:input path="vehicleColor" htmlEscape="false" maxlength="128" class="input-medium"/>
+            <form:input path="vehicleColor" htmlEscape="false" maxlength="128" cssStyle="width: 90px"/>
         </li>
         <li><label>车牌号码：</label>
-            <form:input path="vehicleCode" htmlEscape="false" maxlength="128" class="input-medium"/>
+            <form:input path="vehicleCode" htmlEscape="false" maxlength="128" cssStyle="width: 90px"/>
         </li>
         <li class="btns">
             <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+            <%--<input id="deleteSubmit" class="btn btn-primary" type="button" value="删除" onclick="static_num()"/>--%>
             <input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
             <input id="btnImport" class="btn btn-primary" type="button" value="导入"/></li>
         <li class="clearfix"></li>
@@ -71,6 +104,7 @@
     <thead>
     <tr>
         <th>序号</th>
+        <%--<th>选择</th>--%>
         <th>姓名</th>
         <th>联系电话</th>
         <%--<th>手机号</th>--%>
@@ -87,15 +121,16 @@
     <c:forEach items="${page.list}" var="vehicle" varStatus="status">
         <tr>
             <td>${ status.index + 1}</td>
+            <%--<td><input type="checkbox" name="category" value="${vehicle.id}"/></td>--%>
             <td><a href="${ctx}/vehicle/vehicle/vehicle/form?id=${vehicle.id}">
                     ${vehicle.name}
             </a></td>
             <td>
                     ${vehicle.telephone}
             </td>
-            <%--<td>
-                    ${vehicle.call}
-            </td>--%>
+                <%--<td>
+                        ${vehicle.call}
+                </td>--%>
             <td>
                     ${vehicle.vehicleType}
 
@@ -124,7 +159,7 @@
             <td>
                 <a href="${ctx}/vehicle/vehicle/vehicle/form?id=${vehicle.id}">修改</a>
                 <a href="${ctx}/vehicle/vehicle/vehicle/delete?id=${vehicle.id}"
-                   onclick="return confirmx('确认要删除该vehicle吗？', this.href)">删除</a>
+                   onclick="return confirmx('确认要删除该信息吗？', this.href)">删除</a>
             </td>
         </tr>
     </c:forEach>

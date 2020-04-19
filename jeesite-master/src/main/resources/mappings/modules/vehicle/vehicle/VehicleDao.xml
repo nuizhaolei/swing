@@ -61,9 +61,10 @@
 				<if test="dbName == 'mysql'">concat('%',#{vehicleCode},'%')</if>
 			</if>
 		</where>
+		order by a.create_time desc
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
+				,${page.orderBy}
 			</when>
 			<otherwise>
 			</otherwise>
@@ -77,10 +78,11 @@
 		<include refid="vehicleJoins"/>
 		<where>
 			a.is_valid = 1
-		</where>		
+		</where>
+		ORDER BY a.create_time desc
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
+				,${page.orderBy}
 			</when>
 			<otherwise>
 			</otherwise>

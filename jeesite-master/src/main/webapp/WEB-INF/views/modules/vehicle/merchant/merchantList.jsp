@@ -59,6 +59,7 @@
         <th>序列</th>
         <th>商家名称</th>
         <th>地址</th>
+        <th>联系人</th>
         <th>联系方式</th>
         <th>备注</th>
         <th>操作</th>
@@ -73,6 +74,9 @@
             </a></td>
             <td>
                     ${merchant.address}
+            </td>
+            <td>
+                    ${merchant.linkName}
             </td>
             <td>
                     ${merchant.telephone}

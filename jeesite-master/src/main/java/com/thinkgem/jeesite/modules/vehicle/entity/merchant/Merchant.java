@@ -20,6 +20,7 @@ public class Merchant extends DataEntity<Merchant> {
 	private String address;		// address
 	private String telephone;		// telephone
 	private String remark;		// remark
+	private String linkName; //联系人
 	
 	public Merchant() {
 		super();
@@ -50,7 +51,7 @@ public class Merchant extends DataEntity<Merchant> {
 	}
 	
 	@Length(min=0, max=32, message="telephone长度必须介于 0 和 32 之间")
-	@ExcelField(title="联系电话", align=2, sort=30)
+	@ExcelField(title="联系电话", align=2, sort=35)
 	public String getTelephone() {
 		return telephone;
 	}
@@ -60,9 +61,19 @@ public class Merchant extends DataEntity<Merchant> {
 	}
 	
 	@Length(min=0, max=512, message="remark长度必须介于 0 和 512 之间")
-	@ExcelField(title="备注", align=2, sort=35)
+	@ExcelField(title="备注", align=2, sort=40)
 	public String getRemark() {
 		return remark;
+	}
+
+	@Length(min=0, max=64, message="联系人长度必须介于 0 和 64 之间")
+	@ExcelField(title="联系人", align=2, sort=30)
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
 	}
 
 	public void setRemark(String remark) {

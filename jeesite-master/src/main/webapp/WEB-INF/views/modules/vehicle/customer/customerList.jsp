@@ -82,8 +82,8 @@
             <td>
                     ${customer.telephone}
             </td>
-            <td>
-                    ${customer.carList}
+            <td><a href="${ctx}/vehicle/customer/customer/query?id=${customer.id}">
+                    ${customer.carList}</a>
             </td>
             <td>
                     ${customer.count}

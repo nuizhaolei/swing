@@ -47,6 +47,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">联系人：</label>
+			<div class="controls">
+				<form:input path="linkName" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">联系方式：</label>
 			<div class="controls">
 				<form:input path="telephone" htmlEscape="false" maxlength="32" class="input-xlarge "/>
