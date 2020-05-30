@@ -144,13 +144,13 @@
             <form:textarea path="carList" htmlEscape="false" rows="4" maxlength="256" class="input-xxlarge "/>
         </div>
     </div>
-    <div class="control-group">
+    <%--<div class="control-group">
         <label class="control-label">选择车辆：</label>
         <div class="controls">
             <a class="view_button" onclick="viewLogistics(event,'page.html')"
                href="####">选择</a>
         </div>
-    </div>
+    </div>--%>
     <div class="control-group">
         <label class="control-label">总价：</label>
         <div class="controls">

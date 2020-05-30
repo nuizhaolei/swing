@@ -59,6 +59,16 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">商家类别:</label>
+			<div class="controls">
+				<form:select path="merchantType" class="input-xlarge">
+					<form:option value="" label="请选择"/>
+					<form:options items="${fns:getDictList('merchantType')}" itemLabel="label" itemValue="value"
+								  htmlEscape="false"/>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注：</label>
 			<div class="controls">
 				<form:input path="remark" htmlEscape="false" maxlength="512" class="input-xlarge "/>

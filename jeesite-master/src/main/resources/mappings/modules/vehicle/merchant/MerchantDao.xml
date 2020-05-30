@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.vehicle.dao.merchant.MerchantDao">
-    
+
+	<resultMap id="merchantResult" type="Merchant">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="address" column="address"/>
+		<result property="telephone" column="telephone"/>
+		<result property="remark" column="remark"/>
+		<result property="linkName" column="linkName"/>
+		<result property="merchantType" column="merchantType"/>
+
+		<result property="user.id" column="user.id"/>
+		<result property="user.name" column="user.name"/>
+	</resultMap>
+
 	<sql id="merchantColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.address AS "address",
 		a.telephone AS "telephone",
 		a.remark AS "remark",
-		a.link_name as "linkName"
+		a.link_name as "linkName",
+		a.merchant_Type as "merchantType",
+
+		b.id as "user.id",
+		b.name as "user.name"
 	</sql>
 	
 	<sql id="merchantJoins">
+		left join sys_user b on a.sys_user_id = b.id
 	</sql>
     
 	<select id="get" resultType="Merchant">
@@ -70,13 +88,17 @@
 			address,
 			telephone,
 			link_name,
-			remark
+			remark,
+			merchant_Type,
+			sys_user_id
 		) VALUES (
 			#{name},
 			#{address},
 			#{telephone},
 			#{linkName},
-			#{remark}
+			#{remark},
+			#{merchantType},
+			#{user.id}
 		)
 	</insert>
 	
@@ -94,5 +116,22 @@
 		DELETE FROM merchant
 		WHERE id = #{id}
 	</update>
-	
+	<select id="findMerchants" resultMap="merchantResult">
+		SELECT
+		<include refid="merchantColumns"/>
+		FROM merchant a
+		<include refid="merchantJoins"/>
+		<where>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="telephone != null and telephone != ''">
+				AND a.telephone = #{telephone}
+			</if>
+		</where>
+	</select>
+
 </mapper>

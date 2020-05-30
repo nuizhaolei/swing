@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.vehicle.entity.vehicle;
 
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -43,6 +44,8 @@ public class Vehicle extends DataEntity<Vehicle> {
 	private Date createTime;		// 时间
 
 	private String price;		// price
+
+	private User user;
 	
 	public Vehicle() {
 		super();
@@ -166,5 +169,12 @@ public class Vehicle extends DataEntity<Vehicle> {
 	public void setPrice(String price) {
 		this.price = price;
 	}
-	
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

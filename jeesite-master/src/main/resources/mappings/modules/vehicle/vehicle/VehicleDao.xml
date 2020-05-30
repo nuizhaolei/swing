@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.vehicle.dao.vehicle.VehicleDao">
-    
-	<sql id="vehicleColumns">
+
+    <resultMap id="vehicleResult" type="Vehicle">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="telephone" column="telephone"/>
+        <result property="call" column="call"/>
+        <result property="vehicleType" column="vehicleType"/>
+        <result property="vehicleColor" column="vehicleColor"/>
+        <result property="vehicleCode" column="vehicleCode"/>
+        <result property="isLimitLine" column="isLimitLine"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="createTime"/>
+        <result property="price" column="price"/>
+
+        <result property="user.id" column="user.id"/>
+        <result property="user.name" column="user.name"/>
+    </resultMap>
+
+    <sql id="vehicleColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.telephone AS "telephone",
@@ -15,81 +32,85 @@
 		a.nh_001 AS "nh001",
 		a.nh_002 AS "nh002",
 		a.create_time AS "createTime",
-		a.price AS "price"
+		a.price AS "price",
+
+		b.id as "user.id",
+		b.name as "user.name"
 	</sql>
-	
-	<sql id="vehicleJoins">
+
+    <sql id="vehicleJoins">
+		left join sys_user b on a.sys_user_id = b.id
 	</sql>
-    
-	<select id="get" resultType="Vehicle">
-		SELECT 
-			<include refid="vehicleColumns"/>
-		FROM vehicle a
-		<include refid="vehicleJoins"/>
-		WHERE a.id = #{id} and a.is_valid = 1
-	</select>
-	
-	<select id="findList" resultType="Vehicle">
-		SELECT 
-			<include refid="vehicleColumns"/>
-		FROM vehicle a
-		<include refid="vehicleJoins"/>
-		<where>
-			a.is_valid = 1
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-			<if test="vehicleType != null and vehicleType != ''">
-				AND a.vehicle_Type LIKE
-				<if test="dbName == 'oracle'">'%'||#{vehicleType}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{vehicleType}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{vehicleType},'%')</if>
-			</if>
-			<if test="vehicleColor != null and vehicleColor != ''">
-				AND a.vehicle_Color LIKE
-				<if test="dbName == 'oracle'">'%'||#{vehicleColor}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{vehicleColor}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{vehicleColor},'%')</if>
-			</if>
-			<if test="vehicleCode != null and vehicleCode != ''">
-				AND a.vehicle_Code LIKE
-				<if test="dbName == 'oracle'">'%'||#{vehicleCode}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{vehicleCode}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{vehicleCode},'%')</if>
-			</if>
-		</where>
-		order by a.create_time desc
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				,${page.orderBy}
-			</when>
-			<otherwise>
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="Vehicle">
-		SELECT 
-			<include refid="vehicleColumns"/>
-		FROM vehicle a
-		<include refid="vehicleJoins"/>
-		<where>
-			a.is_valid = 1
-		</where>
-		ORDER BY a.create_time desc
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				,${page.orderBy}
-			</when>
-			<otherwise>
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+
+    <select id="get" resultMap="vehicleResult">
+        SELECT
+        <include refid="vehicleColumns"/>
+        FROM vehicle a
+        <include refid="vehicleJoins"/>
+        WHERE a.id = #{id} and a.is_valid = 1
+    </select>
+
+    <select id="findList" resultMap="vehicleResult">
+        SELECT
+        <include refid="vehicleColumns"/>
+        FROM vehicle a
+        <include refid="vehicleJoins"/>
+        <where>
+            a.is_valid = 1
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+            <if test="vehicleType != null and vehicleType != ''">
+                AND a.vehicle_Type LIKE
+                <if test="dbName == 'oracle'">'%'||#{vehicleType}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{vehicleType}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{vehicleType},'%')</if>
+            </if>
+            <if test="vehicleColor != null and vehicleColor != ''">
+                AND a.vehicle_Color LIKE
+                <if test="dbName == 'oracle'">'%'||#{vehicleColor}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{vehicleColor}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{vehicleColor},'%')</if>
+            </if>
+            <if test="vehicleCode != null and vehicleCode != ''">
+                AND a.vehicle_Code LIKE
+                <if test="dbName == 'oracle'">'%'||#{vehicleCode}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{vehicleCode}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{vehicleCode},'%')</if>
+            </if>
+        </where>
+        order by a.create_time desc
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ,${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultMap="vehicleResult">
+        SELECT
+        <include refid="vehicleColumns"/>
+        FROM vehicle a
+        <include refid="vehicleJoins"/>
+        <where>
+            a.is_valid = 1
+        </where>
+        ORDER BY a.create_time desc
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ,${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO vehicle(
 			name,
 			telephone,
@@ -102,7 +123,8 @@
 			nh_001,
 			nh_002,
 			create_time,
-			price
+			price,
+			sys_user_id
 		) VALUES (
 			#{name},
 			#{telephone},
@@ -115,11 +137,12 @@
 			#{nh001},
 			#{nh002},
 			#{createTime},
-			#{price}
+			#{price},
+			#{user.id}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE vehicle SET 	
 			name = #{name},
 			telephone = #{telephone},
@@ -135,11 +158,37 @@
 			price = #{price}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE vehicle SET
 			is_valid = 0
 		WHERE id = #{id}
 	</update>
-	
+
+    <select id="findVehicleByName" resultMap="vehicleResult">
+        SELECT
+        <include refid="vehicleColumns"/>
+        FROM vehicle a
+        <include refid="vehicleJoins"/>
+        <where>
+            a.is_valid = 1
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+            <if test="telephone != null and telephone != ''">
+                AND a.telephone = #{telephone}
+            </if>
+            <if test="vehicleType != null and vehicleType != ''">
+                AND a.vehicle_type LIKE
+                <if test="dbName == 'oracle'">'%'||#{vehicleType}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{vehicleType}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{vehicleType},'%')</if>
+            </if>
+        </where>
+        ORDER BY a.create_time desc
+    </select>
+
 </mapper>

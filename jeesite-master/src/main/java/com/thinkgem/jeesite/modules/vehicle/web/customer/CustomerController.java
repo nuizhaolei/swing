@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.vehicle.entity.customer.Customer;
@@ -60,7 +61,7 @@ public class CustomerController extends BaseController {
     public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
         SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
         if (!UserUtils.isAuthority(principal)) {
-            customer.setUserNo(principal.getNo());
+            customer.setUser(new User(principal.getId()));
         }
         Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
         model.addAttribute("page", page);
@@ -90,7 +91,7 @@ public class CustomerController extends BaseController {
             addMessage(redirectAttributes, "保存客户信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";
         }
-        customer.setUserNo(principal.getNo());
+        customer.setUser(new User(principal.getId()));
         customerService.save(customer);
         addMessage(redirectAttributes, "保存客户成功");
         return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/?repage";
@@ -127,10 +128,6 @@ public class CustomerController extends BaseController {
             List<Customer> list = ei.getDataList(Customer.class);
             BigDecimal bigDecimal = null;
             SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-            String userNo = null;
-            if (null != principal) {
-                userNo = principal.getNo() == null ? "0001" : principal.getNo();
-            }
             for (Customer customer : list) {
                 try {
                     if (customer.getName() != null && customer.getName().trim().length() > 0) {
@@ -139,7 +136,7 @@ public class CustomerController extends BaseController {
                             bigDecimal = new BigDecimal(customer.getTelephone());
                             customer.setTelephone(bigDecimal.toPlainString());
                         }
-                        customer.setUserNo(userNo);
+                        customer.setUser(new User(principal.getId()));
                         customerService.save(customer);
                         successNum++;
                     } else {

@@ -11,6 +11,9 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.vehicle.entity.vehicle.Vehicle;
 import com.thinkgem.jeesite.modules.vehicle.service.vehicle.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +86,11 @@ public class VehicleController extends BaseController {
             StringBuilder failureMsg = new StringBuilder();
             ImportExcel ei = new ImportExcel(file, 1, 0);
             List<Vehicle> list = ei.getDataList(Vehicle.class);
+            SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
+            User user = null;
+            if (UserUtils.isAuthority(principal) && principal.getId() != null) {
+                user = new User(principal.getId());
+            }
             BigDecimal bigDecimal = null;
             for (Vehicle vehicle : list) {
                 try {
@@ -92,6 +100,12 @@ public class VehicleController extends BaseController {
 
                         bigDecimal = new BigDecimal(vehicle.getTelephone());
                         vehicle.setTelephone(bigDecimal.toPlainString());
+                        vehicle.setUser(user);
+                        if(isDuplicate(vehicle)) {
+                            failureMsg.append("<br/>姓名" + vehicle.getName() + " 已经导入; ");
+                            failureNum++;
+                            continue;
+                        }
                         vehicleService.save(vehicle);
                         successNum++;
                     } else {
@@ -118,7 +132,7 @@ public class VehicleController extends BaseController {
         } catch (Exception e) {
             addMessage(redirectAttributes, "导入失败！失败信息：" + e.getMessage());
         }
-        return "modules/vehicle/vehicle/vehicleList";
+        return "redirect:" + adminPath + "/vehicle/vehicle/vehicle";
     }
 
     @RequestMapping(value = "form")
@@ -132,22 +146,52 @@ public class VehicleController extends BaseController {
         if (!beanValidator(model, vehicle)) {
             return form(vehicle, model);
         }
-        String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
         if (vehicle.getTelephone() == null || !vehicle.getTelephone().matches(regex)) {
             model.addAttribute("customer", vehicle);
             addMessage(redirectAttributes, "保存信息失败，电话号不符合要求，请检查！");
-            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/vehicleForm?repage";
+            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
+        }
+        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
+        if (UserUtils.isAuthority(principal) && principal.getId() != null) {
+            vehicle.setUser(new User(principal.getId()));
+        } else {
+            addMessage(redirectAttributes, "保存失败！");
+            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
+        }
+        if (isDuplicate(vehicle)) {
+            addMessage(redirectAttributes, "保存失败，该用户已经上传！");
+            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
         }
         vehicleService.save(vehicle);
         addMessage(redirectAttributes, "保存成功");
         return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
     }
 
+    public boolean isDuplicate(Vehicle vehicle) {
+        boolean flag = false;
+        List<Vehicle> vehicles = vehicleService.findVehicles(vehicle);
+        if(vehicles != null  && vehicles.size() > 0) {
+            flag = true;
+        }
+        return flag;
+    }
+
     @RequestMapping(value = "delete")
     public String delete(Vehicle vehicle, RedirectAttributes redirectAttributes) {
-        vehicleService.delete(vehicle);
-        addMessage(redirectAttributes, "删除成功");
-        return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
+        try {
+            SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
+            if(principal.getId() != null && !principal.getId().equals(vehicle.getUser().getId())) {
+                addMessage(redirectAttributes, "删除失败，只能删除自己添加的");
+                return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
+            }
+            vehicleService.delete(vehicle);
+            addMessage(redirectAttributes, "删除成功");
+            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
+        }catch (Exception e) {
+            addMessage(redirectAttributes, "删除失败!");
+            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
+        }
     }
 
 }

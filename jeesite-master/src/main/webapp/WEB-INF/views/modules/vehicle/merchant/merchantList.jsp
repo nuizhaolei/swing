@@ -61,6 +61,8 @@
         <th>地址</th>
         <th>联系人</th>
         <th>联系方式</th>
+        <th>创建者</th>
+        <th>商家类别</th>
         <th>备注</th>
         <th>操作</th>
     </tr>
@@ -80,6 +82,25 @@
             </td>
             <td>
                     ${merchant.telephone}
+            </td>
+            <td>
+                    ${merchant.user.name}
+            </td>
+            <td>
+                <c:choose>
+                    <c:when test="${merchant.merchantType== '1'}">
+                        婚庆
+                    </c:when>
+                    <c:when test="${merchant.merchantType== '2'}">
+                        酒店
+                    </c:when>
+                    <c:when test="${merchant.merchantType== '3'}">
+                        婚纱摄影
+                    </c:when>
+                    <c:when test="${merchant.merchantType== '4'}">
+                        花店
+                    </c:when>
+                </c:choose>
             </td>
             <td>
                     ${merchant.remark}

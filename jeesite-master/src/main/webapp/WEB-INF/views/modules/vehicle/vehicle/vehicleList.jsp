@@ -112,6 +112,7 @@
         <th>颜色</th>
         <th>车牌号码</th>
         <th>是否限行</th>
+        <th>创建者</th>
         <th>备注</th>
         <th>单价</th>
         <th>操作</th>
@@ -145,11 +146,12 @@
             </td>
             <td>
                     ${vehicle.isLimitLine}
-
+            </td>
+            <td>
+                    ${vehicle.user.name}
             </td>
             <td>
                     ${vehicle.remark}
-
             </td>
             <td>
                     ${vehicle.price}

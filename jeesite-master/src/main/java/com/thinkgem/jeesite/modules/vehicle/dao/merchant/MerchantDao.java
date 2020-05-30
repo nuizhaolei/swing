@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.vehicle.entity.merchant.Merchant;
 
+import java.util.List;
+
 /**
  * merchantDAO接口
  * @author merchant
@@ -14,5 +16,7 @@ import com.thinkgem.jeesite.modules.vehicle.entity.merchant.Merchant;
  */
 @MyBatisDao
 public interface MerchantDao extends CrudDao<Merchant> {
+
+    List<Merchant> findMerchants(Merchant merchant);
 	
 }

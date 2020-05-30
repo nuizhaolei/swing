@@ -163,9 +163,9 @@
 			<include refid="userColumns"/>
 		FROM sys_user a
 		<include refid="userJoins"/>
-		<if test="role != null and role.id != null and role.id != ''">
+		<!--<if test="role != null and role.id != null and role.id != ''">
 			JOIN sys_user_role ur ON ur.user_id = a.id AND ur.role_id = #{role.id}
-		</if>
+		</if>-->
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		<if test="company != null and company.id != null and company.id != ''">
 			AND (c.id = #{company.id} OR c.parent_ids LIKE 

@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.vehicle.entity.vehicle.Vehicle;
 
+import java.util.List;
+
 /**
  * vehicleDAO接口
  * @author vehicle
@@ -14,5 +16,7 @@ import com.thinkgem.jeesite.modules.vehicle.entity.vehicle.Vehicle;
  */
 @MyBatisDao
 public interface VehicleDao extends CrudDao<Vehicle> {
+
+    List<Vehicle> findVehicleByName(Vehicle vehicle);
 	
 }

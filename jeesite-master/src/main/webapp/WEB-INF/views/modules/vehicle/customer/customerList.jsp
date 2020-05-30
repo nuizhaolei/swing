@@ -65,6 +65,7 @@
         <th>路线</th>
         <th>公里计算</th>
         <th>总价</th>
+        <th>创建者</th>
         <th>备注</th>
         <th>操作</th>
     </tr>
@@ -96,6 +97,9 @@
             </td>
             <td>
                     ${customer.totalPrice}
+            </td>
+            <td>
+                    ${customer.user.name}
             </td>
             <td>
                     ${customer.remark}

@@ -14,10 +14,12 @@
 		a.line AS "line",
 		a.remark AS "remark",
 		a.create_time AS "createTime",
-		a.user_no as "userNo"
+		a.sys_user_id as "user.id",
+		b.name as "user.name"
 	</sql>
 	
 	<sql id="customerJoins">
+		left join sys_user b on a.sys_user_id = b.id
 	</sql>
     
 	<select id="get" resultType="Customer">
@@ -35,9 +37,9 @@
 		<include refid="customerJoins"/>
 		<where>
 			a.is_valid = 1
-			<if test="userNo != null and userNo != ''">
+			<!--<if test="userNo != null and userNo != ''">
 				and a.user_no = #{userNo}
-			</if>
+			</if>-->
 			<!--<if test="userNo != null and userNo != ''">
 				and a.user_no = #{userNo}
 			</if>-->
@@ -91,7 +93,7 @@
 			remark,
 			create_time,
 			line,
-			user_no
+			sys_user_id
 		) VALUES (
 			#{name},
 			#{marriageDate},
@@ -103,7 +105,7 @@
 			#{remark},
 			#{createTime},
 			#{line},
-			#{userNo}
+			#{user.id}
 		)
 	</insert>
 	
