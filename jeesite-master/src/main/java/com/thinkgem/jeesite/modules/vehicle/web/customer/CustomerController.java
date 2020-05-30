@@ -85,7 +85,7 @@ public class CustomerController extends BaseController {
             addMessage(redirectAttributes, "保存客户信息失败，你的登陆信息已失效，请重新登陆！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";
         }
-        String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
         if (customer.getTelephone() == null || !customer.getTelephone().matches(regex)) {
             model.addAttribute("customer", customer);
             addMessage(redirectAttributes, "保存客户信息失败，电话号不符合要求，请检查！");

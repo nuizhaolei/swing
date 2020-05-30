@@ -159,7 +159,7 @@ public class VehicleController extends BaseController {
             addMessage(redirectAttributes, "保存失败！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
         }
-        if (isDuplicate(vehicle)) {
+        if (vehicle.getId() == null && isDuplicate(vehicle)) {
             addMessage(redirectAttributes, "保存失败，该用户已经上传！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
         }

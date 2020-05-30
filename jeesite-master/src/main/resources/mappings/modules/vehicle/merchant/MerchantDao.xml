@@ -103,12 +103,25 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE merchant SET 	
+		UPDATE merchant SET
+		<if test="name != null and name != ''">
 			name = #{name},
+		</if>
+		<if test="address != null and address != ''">
 			address = #{address},
+		</if>
+		<if test="telephone != null and telephone != ''">
 			telephone = #{telephone},
+		</if>
+		<if test="remark != null and remark != ''">
 			remark = #{remark},
+		</if>
+		<if test="linkName != null and linkName != ''">
 			link_name = #{linkName}
+		</if>
+		<if test="merchantType != null and merchantType != ''">
+			merchant_type = #{merchantType}
+		</if>
 		WHERE id = #{id}
 	</update>
 	

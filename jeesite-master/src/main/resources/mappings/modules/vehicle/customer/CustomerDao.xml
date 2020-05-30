@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.vehicle.dao.customer.CustomerDao">
-    
-	<sql id="customerColumns">
+
+    <sql id="customerColumns">
 		a.id AS "id",
 		a.telephone AS "telephone",
 		a.name AS "name",
@@ -17,71 +17,71 @@
 		a.sys_user_id as "user.id",
 		b.name as "user.name"
 	</sql>
-	
-	<sql id="customerJoins">
+
+    <sql id="customerJoins">
 		left join sys_user b on a.sys_user_id = b.id
 	</sql>
-    
-	<select id="get" resultType="Customer">
-		SELECT 
-			<include refid="customerColumns"/>
-		FROM customer a
-		<include refid="customerJoins"/>
-		WHERE a.id = #{id} and a.is_valid = 1
-	</select>
-	
-	<select id="findList" resultType="Customer">
-		SELECT 
-			<include refid="customerColumns"/>
-		FROM customer a
-		<include refid="customerJoins"/>
-		<where>
-			a.is_valid = 1
-			<!--<if test="userNo != null and userNo != ''">
-				and a.user_no = #{userNo}
-			</if>-->
-			<!--<if test="userNo != null and userNo != ''">
-				and a.user_no = #{userNo}
-			</if>-->
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-		</where>
-		ORDER BY a.create_time desc
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				,${page.orderBy}
-			</when>
-			<otherwise>
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="Customer">
-		SELECT 
-			<include refid="customerColumns"/>
-		FROM customer a
-		<include refid="customerJoins"/>
-		<where>
-			a.is_valid = 1
-			<if test="userNo != null and userNo != ''">
-				and a.user_no = #{userNo}
-			</if>
-		</where>
-		ORDER BY a.create_time desc
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				,${page.orderBy}
-			</when>
-			<otherwise>
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+
+    <select id="get" resultType="Customer">
+        SELECT
+        <include refid="customerColumns"/>
+        FROM customer a
+        <include refid="customerJoins"/>
+        WHERE a.id = #{id} and a.is_valid = 1
+    </select>
+
+    <select id="findList" resultType="Customer">
+        SELECT
+        <include refid="customerColumns"/>
+        FROM customer a
+        <include refid="customerJoins"/>
+        <where>
+            a.is_valid = 1
+            <!--<if test="userNo != null and userNo != ''">
+                and a.user_no = #{userNo}
+            </if>-->
+            <!--<if test="userNo != null and userNo != ''">
+                and a.user_no = #{userNo}
+            </if>-->
+            <if test="name != null and name != ''">
+                AND a.name LIKE
+                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+            </if>
+        </where>
+        ORDER BY a.create_time desc
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ,${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="Customer">
+        SELECT
+        <include refid="customerColumns"/>
+        FROM customer a
+        <include refid="customerJoins"/>
+        <where>
+            a.is_valid = 1
+            <if test="userNo != null and userNo != ''">
+                and a.user_no = #{userNo}
+            </if>
+        </where>
+        ORDER BY a.create_time desc
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ,${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO customer(
 			name,
 			marriage_date,
@@ -108,25 +108,41 @@
 			#{user.id}
 		)
 	</insert>
-	
-	<update id="update">
-		UPDATE customer SET 	
-			name = #{name},
-			marriage_date = #{marriageDate},
-			count = #{count},
-			total_price = #{totalPrice},
-			distance = #{distance},
-			car_list = #{carList},
-			remark = #{remark},
-			create_time = #{createTime},
-			line = #{line}
-		WHERE id = #{id}
-	</update>
-	
-	<update id="delete">
+
+    <update id="update">
+        UPDATE customer SET
+        <if test="name != null and name != ''">
+            name = #{name},
+        </if>
+        <if test="marriageDate != null and marriageDate != ''">
+            marriage_date = #{marriageDate},
+        </if>
+        <if test="count != null and count != ''">
+            count = #{count},
+        </if>
+        <if test="totalPrice != null and totalPrice != ''">
+            total_price = #{totalPrice},
+        </if>
+        <if test="distance != null and distance != ''">
+            distance = #{distance},
+        </if>
+        <if test="carList != null and carList != ''">
+            car_list = #{carList},
+        </if>
+        <if test="remark != null and remark != ''">
+            remark = #{remark},
+        </if>
+        <if test="line != null and line != ''">
+            line = #{line},
+        </if>
+        create_time = #{createTime}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
 		UPDATE customer SET
 			is_valid = 0
 		WHERE id = #{id}
 	</update>
-	
+
 </mapper>

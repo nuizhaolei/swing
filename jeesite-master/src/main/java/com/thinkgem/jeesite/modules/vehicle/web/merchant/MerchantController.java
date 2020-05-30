@@ -79,7 +79,7 @@ public class MerchantController extends BaseController {
         if (!beanValidator(model, merchant)) {
             return form(merchant, model);
         }
-        String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
         if (merchant.getTelephone() == null || !merchant.getTelephone().matches(regex)) {
             model.addAttribute("customer", merchant);
             addMessage(redirectAttributes, "保存信息失败，电话号不符合要求，请检查！");
@@ -91,7 +91,7 @@ public class MerchantController extends BaseController {
             user = new User(principal.getId());
         }
         merchant.setUser(user);
-        if(isDuplicate(merchant)) {
+        if(merchant.getId() == null && isDuplicate(merchant)) {
             addMessage(redirectAttributes, "保存失败，该信息已经加入！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
         }

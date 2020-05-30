@@ -143,21 +143,43 @@
 	</insert>
 
     <update id="update">
-		UPDATE vehicle SET 	
-			name = #{name},
-			telephone = #{telephone},
-			info_call = #{call},
-			vehicle_type = #{vehicleType},
-			vehicle_color = #{vehicleColor},
-			vehicle_code = #{vehicleCode},
-			is_limit_line = #{isLimitLine},
-			remark = #{remark},
-			nh_001 = #{nh001},
-			nh_002 = #{nh002},
-			create_time = #{createTime},
-			price = #{price}
-		WHERE id = #{id}
-	</update>
+        UPDATE vehicle SET
+        <if test="name != null and name != ''">
+            name = #{name},
+        </if>
+        <if test="telephone != null and telephone != ''">
+            telephone = #{telephone},
+        </if>
+        <if test="call != null and call != ''">
+            info_call = #{call},
+        </if>
+        <if test="vehicleType != null and vehicleType != ''">
+            vehicle_type = #{vehicleType},
+        </if>
+        <if test="vehicleColor != null and vehicleColor != ''">
+            vehicle_color = #{vehicleColor},
+        </if>
+        <if test="vehicleCode != null and vehicleCode != ''">
+            vehicle_code = #{vehicleCode},
+        </if>
+        <if test="isLimitLine != null and isLimitLine != ''">
+            is_limit_line = #{isLimitLine},
+        </if>
+        <if test="remark != null and remark != ''">
+            remark = #{remark},
+        </if>
+        <if test="nh001 != null and nh001 != ''">
+            nh_001 = #{nh001},
+        </if>
+        <if test="nh002 != null and nh002 != ''">
+            nh_002 = #{nh002},
+        </if>
+        <if test="price != null and price != ''">
+            price = #{price},
+        </if>
+        create_time = #{createTime}
+        WHERE id = #{id}
+    </update>
 
     <update id="delete">
 		UPDATE vehicle SET
