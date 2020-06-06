@@ -28,7 +28,7 @@ public class Customer extends DataEntity<Customer> {
     private String name;        // 姓名
     private Date marriageDate;        // 婚期
     private Long count;        // 数量
-    private String totalPrice;        // 总价
+    private Double totalPrice;        // 总价
     private String distance;        // 距离
     private String carList;        // 车队组合
     private String remark;        // 备注
@@ -37,6 +37,7 @@ public class Customer extends DataEntity<Customer> {
     private String telephone;   //电话
     private User user;
     private Gbt22602007 gbt22602007;
+    private String search;
 
     public Customer() {
         super();
@@ -64,11 +65,11 @@ public class Customer extends DataEntity<Customer> {
         this.count = count;
     }
     @ExcelField(title="总价", align=2, sort=55)
-    public String getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(String totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
     @ExcelField(title="公里计算", align=2, sort=50)
@@ -150,5 +151,13 @@ public class Customer extends DataEntity<Customer> {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
     }
 }

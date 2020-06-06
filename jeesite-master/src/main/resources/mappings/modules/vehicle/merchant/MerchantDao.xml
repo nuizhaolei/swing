@@ -31,6 +31,21 @@
 	<sql id="merchantJoins">
 		left join sys_user b on a.sys_user_id = b.id
 	</sql>
+	<sql id="condititions">
+		<where>
+			<if test="search != null and search != ''">
+				AND (a.name LIKE concat('%',#{search},'%')
+				or a.telephone LIKE concat('%',#{search},'%')
+				or a.addressLIKE like concat('%',#{search},'%')
+				or a.link_name like concat('%',#{search},'%')
+				or a.remark like concat('%',#{search},'%')
+				)
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND (a.sys_user_id = #{user.id} or a.sys_user_id is null)
+			</if>
+		</where>
+	</sql>
     
 	<select id="get" resultType="Merchant">
 		SELECT 
@@ -45,15 +60,7 @@
 			<include refid="merchantColumns"/>
 		FROM merchant a
 		<include refid="merchantJoins"/>
-		<where>
-			
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-		</where>
+		<include refid="condititions"/>
 		ORDER BY a.creatime desc
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -69,9 +76,7 @@
 			<include refid="merchantColumns"/>
 		FROM merchant a
 		<include refid="merchantJoins"/>
-		<where>
-			
-		</where>
+		<include refid="condititions"/>
 		ORDER BY a.creatime desc
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -104,24 +109,13 @@
 	
 	<update id="update">
 		UPDATE merchant SET
-		<if test="name != null and name != ''">
 			name = #{name},
-		</if>
-		<if test="address != null and address != ''">
 			address = #{address},
-		</if>
-		<if test="telephone != null and telephone != ''">
 			telephone = #{telephone},
-		</if>
-		<if test="remark != null and remark != ''">
 			remark = #{remark},
-		</if>
-		<if test="linkName != null and linkName != ''">
-			link_name = #{linkName}
-		</if>
-		<if test="merchantType != null and merchantType != ''">
+			link_name = #{linkName},
+			sys_user_id = #{user.id},
 			merchant_type = #{merchantType}
-		</if>
 		WHERE id = #{id}
 	</update>
 	
@@ -134,17 +128,7 @@
 		<include refid="merchantColumns"/>
 		FROM merchant a
 		<include refid="merchantJoins"/>
-		<where>
-			<if test="name != null and name != ''">
-				AND a.name LIKE
-				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-			<if test="telephone != null and telephone != ''">
-				AND a.telephone = #{telephone}
-			</if>
-		</where>
+		<include refid="condititions"/>
 	</select>
 
 </mapper>

@@ -3,19 +3,20 @@
  */
 package com.thinkgem.jeesite.modules.vehicle.web.merchant;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
-
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
-import com.thinkgem.jeesite.modules.vehicle.entity.vehicle.Vehicle;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.thinkgem.jeesite.modules.vehicle.entity.merchant.Merchant;
+import com.thinkgem.jeesite.modules.vehicle.service.merchant.MerchantService;
+import com.thinkgem.jeesite.modules.vehicle.web.common.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,17 +27,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.vehicle.entity.merchant.Merchant;
-import com.thinkgem.jeesite.modules.vehicle.service.merchant.MerchantService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
+ * 商家管理
+ *
  * merchantController
  *
  * @author merchant
@@ -63,6 +62,7 @@ public class MerchantController extends BaseController {
 
     @RequestMapping(value = {"list", ""})
     public String list(Merchant merchant, HttpServletRequest request, HttpServletResponse response, Model model) {
+        merchant.setUser(CommonUtil.getUser());
         Page<Merchant> page = merchantService.findPage(new Page<Merchant>(request, response), merchant);
         model.addAttribute("page", page);
         return "modules/vehicle/merchant/merchantList";
@@ -85,12 +85,7 @@ public class MerchantController extends BaseController {
             addMessage(redirectAttributes, "保存信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
         }
-        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-        User user = null;
-        if (UserUtils.isAuthority(principal) && principal.getId() != null) {
-            user = new User(principal.getId());
-        }
-        merchant.setUser(user);
+        merchant.setUser(CommonUtil.getUser());
         if(merchant.getId() == null && isDuplicate(merchant)) {
             addMessage(redirectAttributes, "保存失败，该信息已经加入！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
@@ -102,11 +97,7 @@ public class MerchantController extends BaseController {
 
     @RequestMapping(value = "delete")
     public String delete(Merchant merchant, RedirectAttributes redirectAttributes) {
-        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-        if (UserUtils.isAuthority(principal) && principal.getId() != null && !principal.getId().equals(merchant.getUser().getId())) {
-            addMessage(redirectAttributes, "删除失败，只能删除自己创建的！");
-            return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
-        }
+        merchant.setUser(CommonUtil.getUser());
         merchantService.delete(merchant);
         addMessage(redirectAttributes, "删除商家成功！");
         return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
@@ -135,11 +126,6 @@ public class MerchantController extends BaseController {
             ImportExcel ei = new ImportExcel(file, 1, 0);
             List<Merchant> list = ei.getDataList(Merchant.class);
             BigDecimal bigDecimal = null;
-            SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-            User user = null;
-            if (UserUtils.isAuthority(principal) && principal.getId() != null) {
-                user = new User(principal.getId());
-            }
             for (Merchant merchant : list) {
                 try {
                     if (merchant.getName() != null && merchant.getName().trim().length() > 0
@@ -149,7 +135,7 @@ public class MerchantController extends BaseController {
                             bigDecimal = new BigDecimal(merchant.getTelephone());
                             merchant.setTelephone(bigDecimal.toPlainString());
                         }
-                        merchant.setUser(user);
+                        merchant.setUser(CommonUtil.getUser());
                         if(isDuplicate(merchant)) {
                             failureMsg.append("<br/>姓名" + merchant.getName() + " 已经导入; ");
                             failureNum++;

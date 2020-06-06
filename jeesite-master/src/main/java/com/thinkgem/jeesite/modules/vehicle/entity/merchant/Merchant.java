@@ -3,13 +3,17 @@
  */
 package com.thinkgem.jeesite.modules.vehicle.entity.merchant;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.Date;
+
 /**
+ * 商家管理
  * merchantEntity
  *
  * @author merchant
@@ -24,7 +28,10 @@ public class Merchant extends DataEntity<Merchant> {
     private String remark;        // remark
     private String linkName; //联系人
     private Integer merchantType;//商家类型
+    private Date creatime;
     private User user;
+
+    private String search;
 
     public Merchant() {
         super();
@@ -126,5 +133,21 @@ public class Merchant extends DataEntity<Merchant> {
 
     public void setMerchantType(Integer merchantType) {
         this.merchantType = merchantType;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public Date getCreatime() {
+        return creatime;
+    }
+
+    public void setCreatime(Date creatime) {
+        this.creatime = creatime;
     }
 }

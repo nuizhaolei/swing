@@ -42,8 +42,8 @@
     <input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
     <input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
     <ul class="ul-form">
-        <li><label>商家名称：</label>
-            <form:input path="name" htmlEscape="false" maxlength="256" class="input-medium"/>
+        <li><label>搜索：</label>
+            <form:input path="search" htmlEscape="false" maxlength="256" class="input-medium"/>
         </li>
         <li class="btns">
             <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
@@ -63,6 +63,7 @@
         <th>联系方式</th>
         <th>创建者</th>
         <th>商家类别</th>
+        <th>创建时间</th>
         <th>备注</th>
         <th>操作</th>
     </tr>
@@ -101,6 +102,9 @@
                         花店
                     </c:when>
                 </c:choose>
+            </td>
+            <td>
+                <fmt:formatDate value="${merchant.creatime}" type="DATE" pattern="yyyy-MM-dd HH:ss:mm"/>
             </td>
             <td>
                     ${merchant.remark}

@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.vehicle.web.customer;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.supcan.common.Common;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
@@ -16,6 +17,7 @@ import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.vehicle.entity.customer.Customer;
 import com.thinkgem.jeesite.modules.vehicle.service.customer.CustomerService;
+import com.thinkgem.jeesite.modules.vehicle.web.common.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +35,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
+ * 客户管理
  * customerController
  *
  * @author customer
@@ -59,10 +62,7 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = {"list", ""})
     public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
-        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-        if (!UserUtils.isAuthority(principal)) {
-            customer.setUser(new User(principal.getId()));
-        }
+        customer.setUser(CommonUtil.getUser());
         Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
         model.addAttribute("page", page);
         return "modules/vehicle/customer/customerList";
@@ -79,19 +79,13 @@ public class CustomerController extends BaseController {
         if (!beanValidator(model, customer)) {
             return form(customer, model);
         }
-        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-        if (principal == null || principal.getNo() == null) {
-            model.addAttribute("customer", customer);
-            addMessage(redirectAttributes, "保存客户信息失败，你的登陆信息已失效，请重新登陆！");
-            return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";
-        }
         String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
         if (customer.getTelephone() == null || !customer.getTelephone().matches(regex)) {
             model.addAttribute("customer", customer);
             addMessage(redirectAttributes, "保存客户信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";
         }
-        customer.setUser(new User(principal.getId()));
+        customer.setUser(CommonUtil.getUser());
         customerService.save(customer);
         addMessage(redirectAttributes, "保存客户成功");
         return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/?repage";

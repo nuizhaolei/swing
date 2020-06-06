@@ -41,6 +41,22 @@
     <sql id="vehicleJoins">
 		left join sys_user b on a.sys_user_id = b.id
 	</sql>
+    <sql id="contiditions">
+        <where>
+            a.is_valid = 1
+            <if test="search != null and search != ''">
+                AND (a.name LIKE concat('%',#{search},'%')
+                or a.telephone LIKE concat('%',#{search},'%')
+                or a.vehicle_color LIKE concat('%',#{search},'%')
+                or a.vehicle_type LIKE concat('%',#{search},'%')
+                or a.vehicle_code LIKE concat('%',#{search},'%')
+                or a.remark LIKE concat('%',#{search},'%'))
+            </if>
+            <if test="user != null and user.id != null and user.id != ''">
+                and (sys_user_id = #{user.id} or sys_user_id is null)
+            </if>
+        </where>
+	</sql>
 
     <select id="get" resultMap="vehicleResult">
         SELECT
@@ -55,33 +71,7 @@
         <include refid="vehicleColumns"/>
         FROM vehicle a
         <include refid="vehicleJoins"/>
-        <where>
-            a.is_valid = 1
-            <if test="name != null and name != ''">
-                AND a.name LIKE
-                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-            </if>
-            <if test="vehicleType != null and vehicleType != ''">
-                AND a.vehicle_Type LIKE
-                <if test="dbName == 'oracle'">'%'||#{vehicleType}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{vehicleType}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{vehicleType},'%')</if>
-            </if>
-            <if test="vehicleColor != null and vehicleColor != ''">
-                AND a.vehicle_Color LIKE
-                <if test="dbName == 'oracle'">'%'||#{vehicleColor}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{vehicleColor}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{vehicleColor},'%')</if>
-            </if>
-            <if test="vehicleCode != null and vehicleCode != ''">
-                AND a.vehicle_Code LIKE
-                <if test="dbName == 'oracle'">'%'||#{vehicleCode}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{vehicleCode}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{vehicleCode},'%')</if>
-            </if>
-        </where>
+        <include refid="contiditions"/>
         order by a.create_time desc
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -97,9 +87,7 @@
         <include refid="vehicleColumns"/>
         FROM vehicle a
         <include refid="vehicleJoins"/>
-        <where>
-            a.is_valid = 1
-        </where>
+        <include refid="contiditions"/>
         ORDER BY a.create_time desc
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -144,72 +132,40 @@
 
     <update id="update">
         UPDATE vehicle SET
-        <if test="name != null and name != ''">
-            name = #{name},
-        </if>
-        <if test="telephone != null and telephone != ''">
-            telephone = #{telephone},
-        </if>
-        <if test="call != null and call != ''">
-            info_call = #{call},
-        </if>
-        <if test="vehicleType != null and vehicleType != ''">
-            vehicle_type = #{vehicleType},
-        </if>
-        <if test="vehicleColor != null and vehicleColor != ''">
-            vehicle_color = #{vehicleColor},
-        </if>
-        <if test="vehicleCode != null and vehicleCode != ''">
-            vehicle_code = #{vehicleCode},
-        </if>
-        <if test="isLimitLine != null and isLimitLine != ''">
-            is_limit_line = #{isLimitLine},
-        </if>
-        <if test="remark != null and remark != ''">
-            remark = #{remark},
-        </if>
-        <if test="nh001 != null and nh001 != ''">
-            nh_001 = #{nh001},
-        </if>
-        <if test="nh002 != null and nh002 != ''">
-            nh_002 = #{nh002},
-        </if>
-        <if test="price != null and price != ''">
-            price = #{price},
-        </if>
+        name = #{name},
+        telephone = #{telephone},
+        info_call = #{call},
+        vehicle_type = #{vehicleType},
+        vehicle_color = #{vehicleColor},
+        vehicle_code = #{vehicleCode},
+        is_limit_line = #{isLimitLine},
+        remark = #{remark},
+        nh_001 = #{nh001},
+        nh_002 = #{nh002},
+        price = #{price},
+        sys_user_id = #{user.id},
         create_time = #{createTime}
         WHERE id = #{id}
+        <if test="user != null and user.id != null and user.id != ''">
+            and (sys_user_id = #{user.id} or sys_user_id is null)
+        </if>
     </update>
 
     <update id="delete">
-		UPDATE vehicle SET
-			is_valid = 0
-		WHERE id = #{id}
-	</update>
+        UPDATE vehicle SET
+        is_valid = 0
+        WHERE id = #{id}
+        <if test="user != null and user.id != null and user.id != ''">
+            and (sys_user_id = #{user.id} or sys_user_id is null)
+        </if>
+    </update>
 
     <select id="findVehicleByName" resultMap="vehicleResult">
         SELECT
         <include refid="vehicleColumns"/>
         FROM vehicle a
         <include refid="vehicleJoins"/>
-        <where>
-            a.is_valid = 1
-            <if test="name != null and name != ''">
-                AND a.name LIKE
-                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-            </if>
-            <if test="telephone != null and telephone != ''">
-                AND a.telephone = #{telephone}
-            </if>
-            <if test="vehicleType != null and vehicleType != ''">
-                AND a.vehicle_type LIKE
-                <if test="dbName == 'oracle'">'%'||#{vehicleType}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{vehicleType}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{vehicleType},'%')</if>
-            </if>
-        </where>
+        <include refid="contiditions"/>
         ORDER BY a.create_time desc
     </select>
 

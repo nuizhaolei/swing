@@ -29,6 +29,7 @@
             $("#searchForm").submit();
             return false;
         }
+
         function static_num() {
             document.getElementById("deleteSubmit").onclick = function () {
                 var arr = new Array();
@@ -44,15 +45,15 @@
                     //请求的媒体类型
                     contentType: "application/json;charset=UTF-8",
                     //请求地址
-                    url : url,
+                    url: url,
                     //数据，json字符串
                     // data : JSON.stringify(arr),
                     //请求成功
-                    success : function(result) {
+                    success: function (result) {
                         console.log(result);
                     },
                     //请求失败，包含具体的错误信息
-                    error : function(e){
+                    error: function (e) {
                         console.log(e.status);
                         console.log(e.responseText);
                     }
@@ -79,18 +80,12 @@
     <input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
     <input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
     <ul class="ul-form">
-        <li><label>姓名：</label>
-            <form:input path="name" htmlEscape="false" maxlength="128" class="input-medium"/>
+        <li><label>搜索：</label>
+            <form:input path="search" htmlEscape="false" maxlength="128" class="input-medium"/>
         </li>
-        <li><label>车型：</label>
-            <form:input path="vehicleType" htmlEscape="false" maxlength="128" cssStyle="width: 90px"/>
-        </li>
-        <li><label>颜色：</label>
-            <form:input path="vehicleColor" htmlEscape="false" maxlength="128" cssStyle="width: 90px"/>
-        </li>
-        <li><label>车牌号码：</label>
-            <form:input path="vehicleCode" htmlEscape="false" maxlength="128" cssStyle="width: 90px"/>
-        </li>
+       <%--  <li><label>创建者：</label>
+            <form:input path="vehicleType" htmlEscape="false" maxlength="128"/>
+        </li>--%>
         <li class="btns">
             <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
             <%--<input id="deleteSubmit" class="btn btn-primary" type="button" value="删除" onclick="static_num()"/>--%>
@@ -113,6 +108,7 @@
         <th>车牌号码</th>
         <th>是否限行</th>
         <th>创建者</th>
+        <th>创建时间</th>
         <th>备注</th>
         <th>单价</th>
         <th>操作</th>
@@ -149,6 +145,9 @@
             </td>
             <td>
                     ${vehicle.user.name}
+            </td>
+            <td>
+                <fmt:formatDate value="${vehicle.createTime}" type="DATE" pattern="yyyy-MM-dd HH:ss:mm"/>
             </td>
             <td>
                     ${vehicle.remark}

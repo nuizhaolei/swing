@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.vehicle.entity.vehicle.Vehicle;
 import com.thinkgem.jeesite.modules.vehicle.service.vehicle.VehicleService;
+import com.thinkgem.jeesite.modules.vehicle.web.common.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +34,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
+ * 车主管理
  * vehicleController
  *
  * @author vehicle
@@ -59,6 +61,7 @@ public class VehicleController extends BaseController {
 
     @RequestMapping(value = {"list", ""})
     public String list(Vehicle vehicle, HttpServletRequest request, HttpServletResponse response, Model model) {
+        vehicle.setUser(CommonUtil.getUser());
         Page<Vehicle> page = vehicleService.findPage(new Page<Vehicle>(request, response), vehicle);
         model.addAttribute("page", page);
         return "modules/vehicle/vehicle/vehicleList";
@@ -152,13 +155,7 @@ public class VehicleController extends BaseController {
             addMessage(redirectAttributes, "保存信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
         }
-        SystemAuthorizingRealm.Principal principal = UserUtils.getPrincipal();
-        if (UserUtils.isAuthority(principal) && principal.getId() != null) {
-            vehicle.setUser(new User(principal.getId()));
-        } else {
-            addMessage(redirectAttributes, "保存失败！");
-            return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
-        }
+        vehicle.setUser(CommonUtil.getUser());
         if (vehicle.getId() == null && isDuplicate(vehicle)) {
             addMessage(redirectAttributes, "保存失败，该用户已经上传！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
@@ -189,6 +186,7 @@ public class VehicleController extends BaseController {
             addMessage(redirectAttributes, "删除成功");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
         }catch (Exception e) {
+            e.printStackTrace();
             addMessage(redirectAttributes, "删除失败!");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";
         }

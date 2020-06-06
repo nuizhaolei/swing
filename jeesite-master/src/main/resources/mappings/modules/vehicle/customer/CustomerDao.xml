@@ -21,6 +21,21 @@
     <sql id="customerJoins">
 		left join sys_user b on a.sys_user_id = b.id
 	</sql>
+    <sql id="conditions">
+        <where>
+            a.is_valid = 1
+            <if test="search != null and search != ''">
+                AND (a.name LIKE concat('%',#{search},'%')
+                or a.telephone LIKE concat('%',#{search},'%')
+                or a.car_list LIKE concat('%',#{search},'%')
+                or a.remark LIKE concat('%',#{search},'%')
+                )
+            </if>
+            <if test="user != null and user.id != null and user.id != ''">
+                and (a.sys_user_id = #{user.id} or a.sys_user_id is null)
+            </if>
+        </where>
+    </sql>
 
     <select id="get" resultType="Customer">
         SELECT
@@ -35,21 +50,7 @@
         <include refid="customerColumns"/>
         FROM customer a
         <include refid="customerJoins"/>
-        <where>
-            a.is_valid = 1
-            <!--<if test="userNo != null and userNo != ''">
-                and a.user_no = #{userNo}
-            </if>-->
-            <!--<if test="userNo != null and userNo != ''">
-                and a.user_no = #{userNo}
-            </if>-->
-            <if test="name != null and name != ''">
-                AND a.name LIKE
-                <if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-            </if>
-        </where>
+        <include refid="conditions"/>
         ORDER BY a.create_time desc
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -65,12 +66,7 @@
         <include refid="customerColumns"/>
         FROM customer a
         <include refid="customerJoins"/>
-        <where>
-            a.is_valid = 1
-            <if test="userNo != null and userNo != ''">
-                and a.user_no = #{userNo}
-            </if>
-        </where>
+        <include refid="conditions"/>
         ORDER BY a.create_time desc
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -111,31 +107,16 @@
 
     <update id="update">
         UPDATE customer SET
-        <if test="name != null and name != ''">
             name = #{name},
-        </if>
-        <if test="marriageDate != null and marriageDate != ''">
             marriage_date = #{marriageDate},
-        </if>
-        <if test="count != null and count != ''">
             count = #{count},
-        </if>
-        <if test="totalPrice != null and totalPrice != ''">
             total_price = #{totalPrice},
-        </if>
-        <if test="distance != null and distance != ''">
             distance = #{distance},
-        </if>
-        <if test="carList != null and carList != ''">
             car_list = #{carList},
-        </if>
-        <if test="remark != null and remark != ''">
             remark = #{remark},
-        </if>
-        <if test="line != null and line != ''">
             line = #{line},
-        </if>
-        create_time = #{createTime}
+            sys_user_id = #{user.id,jdbcType=VARCHAR},
+            create_time = #{createTime}
         WHERE id = #{id}
     </update>
 

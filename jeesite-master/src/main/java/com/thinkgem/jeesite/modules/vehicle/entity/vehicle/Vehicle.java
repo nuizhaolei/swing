@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
+ * 车辆管理
  * vehicleEntity
  * @author vehicle
  * @version 2020-03-31
@@ -43,9 +44,11 @@ public class Vehicle extends DataEntity<Vehicle> {
 
 	private Date createTime;		// 时间
 
-	private String price;		// price
+	private Integer price;		// price
 
 	private User user;
+
+	private String search;
 	
 	public Vehicle() {
 		super();
@@ -162,19 +165,27 @@ public class Vehicle extends DataEntity<Vehicle> {
 		this.createTime = createTime;
 	}
 
-	public String getPrice() {
-		return price;
-	}
-
-	public void setPrice(String price) {
-		this.price = price;
-	}
-
 	public User getUser() {
 		return user;
 	}
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public String getSearch() {
+		return search;
+	}
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public Integer getPrice() {
+		return price;
+	}
+
+	public void setPrice(Integer price) {
+		this.price = price;
 	}
 }
