@@ -11,6 +11,7 @@
         <result property="vehicleColor" column="vehicleColor"/>
         <result property="vehicleCode" column="vehicleCode"/>
         <result property="isLimitLine" column="isLimitLine"/>
+        <result property="area" column="area"/>
         <result property="remark" column="remark"/>
         <result property="createTime" column="createTime"/>
         <result property="price" column="price"/>
@@ -33,6 +34,7 @@
 		a.nh_002 AS "nh002",
 		a.create_time AS "createTime",
 		a.price AS "price",
+		a.area as "area",
 
 		b.id as "user.id",
 		b.name as "user.name"
@@ -50,7 +52,8 @@
                 or a.vehicle_color LIKE concat('%',#{search},'%')
                 or a.vehicle_type LIKE concat('%',#{search},'%')
                 or a.vehicle_code LIKE concat('%',#{search},'%')
-                or a.remark LIKE concat('%',#{search},'%'))
+                or a.remark LIKE concat('%',#{search},'%')
+                or a.area LIKE concat('%',#{search},'%'))
             </if>
             <if test="user != null and user.id != null and user.id != ''">
                 and (sys_user_id = #{user.id} or sys_user_id is null)
@@ -112,7 +115,8 @@
 			nh_002,
 			create_time,
 			price,
-			sys_user_id
+			sys_user_id,
+			area
 		) VALUES (
 			#{name},
 			#{telephone},
@@ -126,7 +130,8 @@
 			#{nh002},
 			#{createTime},
 			#{price},
-			#{user.id}
+			#{user.id},
+			#{area}
 		)
 	</insert>
 
@@ -144,7 +149,8 @@
         nh_002 = #{nh002},
         price = #{price},
         sys_user_id = #{user.id},
-        create_time = #{createTime}
+        create_time = #{createTime},
+        area = #{area}
         WHERE id = #{id}
         <if test="user != null and user.id != null and user.id != ''">
             and (sys_user_id = #{user.id} or sys_user_id is null)

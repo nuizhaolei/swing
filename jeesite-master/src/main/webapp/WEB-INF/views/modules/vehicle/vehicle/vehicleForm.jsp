@@ -77,6 +77,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">区域：</label>
+			<div class="controls">
+				<form:input path="area" htmlEscape="false" maxlength="256" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注：</label>
 			<div class="controls">
 				<form:input path="remark" htmlEscape="false" maxlength="256" class="input-xlarge "/>

@@ -49,6 +49,8 @@ public class Vehicle extends DataEntity<Vehicle> {
 	private User user;
 
 	private String search;
+
+	private String area;
 	
 	public Vehicle() {
 		super();
@@ -129,7 +131,7 @@ public class Vehicle extends DataEntity<Vehicle> {
 	}
 	
 	@Length(min=0, max=256, message="备注长度必须介于 0 和 256 之间")
-	@ExcelField(title="备注", align=2, sort=55)
+	@ExcelField(title="备注", align=2, sort=65)
 	public String getRemark() {
 		return remark;
 	}
@@ -157,6 +159,7 @@ public class Vehicle extends DataEntity<Vehicle> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@ExcelField(title="车型", align=2, sort=60)
 	public Date getCreateTime() {
 		return createTime;
 	}
@@ -187,5 +190,14 @@ public class Vehicle extends DataEntity<Vehicle> {
 
 	public void setPrice(Integer price) {
 		this.price = price;
+	}
+	@Length(min=0, max=256, message="备注长度必须介于 0 和 256 之间")
+	@ExcelField(title="区域", align=2, sort=55)
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
 	}
 }

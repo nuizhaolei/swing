@@ -109,6 +109,7 @@
         <th>是否限行</th>
         <th>创建者</th>
         <th>创建时间</th>
+        <th>区域</th>
         <th>备注</th>
         <th>单价</th>
         <th>操作</th>
@@ -148,6 +149,9 @@
             </td>
             <td>
                 <fmt:formatDate value="${vehicle.createTime}" type="DATE" pattern="yyyy-MM-dd HH:ss:mm"/>
+            </td>
+            <td>
+                    ${vehicle.area}
             </td>
             <td>
                     ${vehicle.remark}
