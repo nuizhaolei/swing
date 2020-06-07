@@ -6,7 +6,6 @@ package com.thinkgem.jeesite.modules.vehicle.web.customer;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.supcan.common.Common;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
@@ -79,8 +78,7 @@ public class CustomerController extends BaseController {
         if (!beanValidator(model, customer)) {
             return form(customer, model);
         }
-        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-        if (customer.getTelephone() == null || !customer.getTelephone().matches(regex)) {
+        if (CommonUtil.checkTel(customer.getTelephone())) {
             model.addAttribute("customer", customer);
             addMessage(redirectAttributes, "保存客户信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/customer/customer/form?repage";

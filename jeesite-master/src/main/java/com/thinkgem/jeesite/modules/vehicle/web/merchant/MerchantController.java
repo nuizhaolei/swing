@@ -11,9 +11,6 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.vehicle.entity.merchant.Merchant;
 import com.thinkgem.jeesite.modules.vehicle.service.merchant.MerchantService;
 import com.thinkgem.jeesite.modules.vehicle.web.common.CommonUtil;
@@ -79,8 +76,7 @@ public class MerchantController extends BaseController {
         if (!beanValidator(model, merchant)) {
             return form(merchant, model);
         }
-        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-        if (merchant.getTelephone() == null || !merchant.getTelephone().matches(regex)) {
+        if (CommonUtil.checkTel(merchant.getTelephone())) {
             model.addAttribute("customer", merchant);
             addMessage(redirectAttributes, "保存信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";

@@ -149,8 +149,7 @@ public class VehicleController extends BaseController {
         if (!beanValidator(model, vehicle)) {
             return form(vehicle, model);
         }
-        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-        if (vehicle.getTelephone() == null || !vehicle.getTelephone().matches(regex)) {
+        if (CommonUtil.checkTel(vehicle.getTelephone())) {
             model.addAttribute("customer", vehicle);
             addMessage(redirectAttributes, "保存信息失败，电话号不符合要求，请检查！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/vehicle/vehicle/?repage";

@@ -159,7 +159,7 @@ public class Vehicle extends DataEntity<Vehicle> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@ExcelField(title="车型", align=2, sort=60)
+	@ExcelField(title="创建时间", align=2, sort=60)
 	public Date getCreateTime() {
 		return createTime;
 	}
