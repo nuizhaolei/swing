@@ -71,8 +71,8 @@ public class VehicleController extends BaseController {
     public String export(Vehicle vehicle, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
         try {
             String fileName = "车辆数据" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
-            Page<Vehicle> page = vehicleService.findPage(new Page<Vehicle>(request, response), vehicle);
-            new ExportExcel("车辆数据", Vehicle.class).setDataList(page.getList()).write(response, fileName).dispose();
+            List<Vehicle> list = vehicleService.findList(vehicle);
+            new ExportExcel("车辆数据", Vehicle.class).setDataList(list).write(response, fileName).dispose();
             return null;
         } catch (Exception e) {
             e.printStackTrace();

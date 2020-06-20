@@ -36,7 +36,7 @@
 			<if test="search != null and search != ''">
 				AND (a.name LIKE concat('%',#{search},'%')
 				or a.telephone LIKE concat('%',#{search},'%')
-				or a.addressLIKE like concat('%',#{search},'%')
+				or a.address like concat('%',#{search},'%')
 				or a.link_name like concat('%',#{search},'%')
 				or a.remark like concat('%',#{search},'%')
 				)

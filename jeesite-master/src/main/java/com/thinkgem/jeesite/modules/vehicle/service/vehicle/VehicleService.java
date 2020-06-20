@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.vehicle.dao.vehicle.VehicleDao;
 
 /**
  * vehicleService
+ *
  * @author vehicle
  * @version 2020-03-31
  */
@@ -24,40 +25,45 @@ import com.thinkgem.jeesite.modules.vehicle.dao.vehicle.VehicleDao;
 @Transactional(readOnly = true)
 public class VehicleService extends CrudService<VehicleDao, Vehicle> {
 
-	@Autowired
-	private VehicleDao vehicleDao;
+    @Autowired
+    private VehicleDao vehicleDao;
 
-	public Vehicle get(String id) {
-		return super.get(id);
-	}
-	
-	public List<Vehicle> findList(Vehicle vehicle) {
-		return super.findList(vehicle);
-	}
-	
-	public Page<Vehicle> findPage(Page<Vehicle> page, Vehicle vehicle) {
-		return super.findPage(page, vehicle);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(Vehicle vehicle) {
-		super.save(vehicle);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(Vehicle vehicle) {
-		super.delete(vehicle);
-	}
+    @Override
+    public Vehicle get(String id) {
+        return super.get(id);
+    }
 
-	public List<Vehicle> findVehicles(Vehicle vehicle) {
-		List<Vehicle> vehicleList  = null;
-		try {
-			vehicleList = vehicleDao.findVehicleByName(vehicle);
-		} catch (Exception e) {
-			logger.info("VehicleService findVehicleByName is failed.",e);
-			return  new ArrayList<Vehicle>();
-		}
-		return vehicleList;
-	}
-	
+    @Override
+    public List<Vehicle> findList(Vehicle vehicle) {
+        return super.findList(vehicle);
+    }
+
+    @Override
+    public Page<Vehicle> findPage(Page<Vehicle> page, Vehicle vehicle) {
+        return super.findPage(page, vehicle);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void save(Vehicle vehicle) {
+        super.save(vehicle);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void delete(Vehicle vehicle) {
+        super.delete(vehicle);
+    }
+
+    public List<Vehicle> findVehicles(Vehicle vehicle) {
+        List<Vehicle> vehicleList = null;
+        try {
+            vehicleList = vehicleDao.findVehicleByName(vehicle);
+        } catch (Exception e) {
+            logger.info("VehicleService findVehicleByName is failed.", e);
+            return new ArrayList<Vehicle>();
+        }
+        return vehicleList;
+    }
+
 }

@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * 商家管理
- *
+ * <p>
  * merchantController
  *
  * @author merchant
@@ -82,7 +82,7 @@ public class MerchantController extends BaseController {
             return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
         }
         merchant.setUser(CommonUtil.getUser());
-        if(merchant.getId() == null && isDuplicate(merchant)) {
+        if (merchant.getId() == null && isDuplicate(merchant)) {
             addMessage(redirectAttributes, "保存失败，该信息已经加入！");
             return "redirect:" + Global.getAdminPath() + "/vehicle/merchant/merchant?repage";
         }
@@ -103,8 +103,8 @@ public class MerchantController extends BaseController {
     public String export(Merchant merchant, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
         try {
             String fileName = "商家明细表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
-            Page<Merchant> page = merchantService.findPage(new Page<Merchant>(request, response), merchant);
-            new ExportExcel("商家明细表", Merchant.class).setDataList(page.getList()).write(response, fileName).dispose();
+            List<Merchant> list = merchantService.findList(merchant);
+            new ExportExcel("商家明细表", Merchant.class).setDataList(list).write(response, fileName).dispose();
             return null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +132,7 @@ public class MerchantController extends BaseController {
                             merchant.setTelephone(bigDecimal.toPlainString());
                         }
                         merchant.setUser(CommonUtil.getUser());
-                        if(isDuplicate(merchant)) {
+                        if (isDuplicate(merchant)) {
                             failureMsg.append("<br/>姓名" + merchant.getName() + " 已经导入; ");
                             failureNum++;
                             continue;
@@ -169,7 +169,7 @@ public class MerchantController extends BaseController {
     public boolean isDuplicate(Merchant merchant) {
         boolean flag = false;
         List<Merchant> merchants = merchantService.findMerchants(merchant);
-        if(null != merchants && merchants.size() > 0) {
+        if (null != merchants && merchants.size() > 0) {
             flag = true;
         }
         return flag;
