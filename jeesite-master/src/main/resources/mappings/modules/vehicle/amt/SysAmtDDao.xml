@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.vehicle.dao.amt.SysAmtDDao">
+    
+	<sql id="sysAmtDColumns">
+		a.id AS "id",
+		a.amt_date AS "amtDate",
+		a.amt_name AS "amtName",
+		a.amt_input AS "amtInput",
+		a.amt_output AS "amtOutput",
+		a.amt_balance AS "amtBalance",
+		a.remark AS "remark"
+	</sql>
+	
+	<sql id="sysAmtDJoins">
+	</sql>
+    
+	<select id="get" resultType="SysAmtD">
+		SELECT 
+			<include refid="sysAmtDColumns"/>
+		FROM sys_amt_d a
+		<include refid="sysAmtDJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysAmtD">
+		SELECT 
+			<include refid="sysAmtDColumns"/>
+		FROM sys_amt_d a
+		<include refid="sysAmtDJoins"/>
+		<where>
+			
+			<if test="amtDate != null and amtDate != ''">
+				AND a.amt_date = DATE_FORMAT(#{amtDate}, '%Y-%m-%d')
+			</if>
+			<if test="amtName != null and amtName != ''">
+				AND a.amt_name = #{amtName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysAmtD">
+		SELECT 
+			<include refid="sysAmtDColumns"/>
+		FROM sys_amt_d a
+		<include refid="sysAmtDJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_amt_d(
+			amt_date,
+			amt_name,
+			amt_input,
+			amt_output,
+			amt_balance,
+			remark
+		) VALUES (
+			#{amtDate},
+			#{amtName},
+			#{amtInput},
+			#{amtOutput},
+			#{amtBalance},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_amt_d SET 	
+			amt_date = #{amtDate},
+			amt_name = #{amtName},
+			amt_input = #{amtInput},
+			amt_output = #{amtOutput},
+			amt_balance = #{amtBalance},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_amt_d
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
